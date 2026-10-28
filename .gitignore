@@ -2,3 +2,12 @@
 __pycache__/
 ~$*
 data/*.db
+
+# 手元だけに置くもの（GitHub に上げない）
+tmo/
+image.png
+qr_output/
+*.xlsx
+ラズパイ_*.md
+docs/*.docx
+docs/*.png
