@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>M5StickC ダミー</title>
+<style>
+  body { font-family:"Meiryo",sans-serif; background:#eee; margin:0; padding:16px; }
+  .wrap { max-width:760px; margin:0 auto; display:grid; grid-template-columns: 260px 1fr; gap:20px; }
+  .m5 { background:#e8590c; border-radius:14px; padding:16px; }
+  .lcd { background:#000; color:#fff; font-family:monospace; font-size:15px; line-height:1.5; height:150px; padding:8px; white-space:pre-wrap; overflow:hidden; border-radius:4px; }
+  .lcd.alert { background:#a00; } .lcd.warn { background:#960; } .lcd.ok { color:#6f6; }
+  .m5 .btns { display:flex; gap:8px; margin-top:10px; } .m5 button { flex:1; padding:10px; font-weight:bold; }
+  .panel { background:#fff; padding:12px; border:1px solid #bbb; }
+  .panel h3 { margin:0 0 6px; } input { width:100%; padding:8px; font:inherit; box-sizing:border-box; }
+  .qr { display:flex; flex-wrap:wrap; gap:6px; margin:6px 0 14px; } .qr button { padding:4px 8px; font-size:12px; }
+  .note { font-size:12px; color:#555; }
+</style>
+</head>
+<body>
+<h2 style="text-align:center">M5StickC ダミー（QR出庫フロー）</h2>
+<div class="wrap">
+  <div class="m5">
+    <div class="lcd" id="lcd"></div>
+    <div class="btns"><button id="btnA">A: 決定</button><button id="btnB">B: 取消</button></div>
+  </div>
+  <div class="panel">
+    <h3>QR読み取り（文字列を入力して Enter）</h3>
+    <input id="scan" placeholder="例: 社員名,山田太郎" autofocus>
+    <p class="note">順序: 社員 → 部署 → 部品 → 個数 → A:決定 / B:取消。QRの中身は「項目名,値」（社員名 / 部署名 / 品番 / 個数）。下のボタンで入力欄にQR文字列を入れて Enter。</p>
+    <h3>社員QR</h3><div class="qr" id="qr-user"></div>
+    <h3>部署QR</h3><div class="qr" id="qr-dept"></div>
+    <h3>部品QR</h3><div class="qr" id="qr-item"></div>
+    <h3>個数QR</h3><div class="qr" id="qr-qty"></div>
+    <p class="note">※ 出庫は <code>POST /api/checkout</code> を直接呼びます。発注点以下の通知は、実機が <code>degimono/alert</code>（MQTT）で受けるものと同じ文を WebSocket（<code>/ws/alert</code>）で受けて表示します。<span id="ws-state"></span></p>
+  </div>
+</div>
+<script>
+let step = 'USER', data = {}, msg = '', cls = '';
+const lcd = document.getElementById('lcd'), scan = document.getElementById('scan');
+const PROMPT = { USER:'社員証をスキャン', DEPT:()=>`${data.name}さん\n部署QRをスキャン`,
+  ITEM:()=>`部署: ${data.dept}\n部品QRをスキャン`, QTY:()=>`部品: ${data.part}\n個数QRをスキャン`,
+  CONFIRM:()=>`人: ${data.name}\n部: ${data.dept}\n品: ${data.part} x ${data.qty}\nA: 決定 / B: 取消` };
+
+function draw() {
+  const p = PROMPT[step]; const text = typeof p === 'function' ? p() : p;
+  lcd.textContent = (msg ? msg + '\n\n' : '') + (msg ? '' : text);
+  lcd.className = 'lcd ' + cls;
+}
+function beep(freq = 880, ms = 200) {
+  try { const c = new (window.AudioContext || window.webkitAudioContext)(), o = c.createOscillator();
+    o.frequency.value = freq; o.connect(c.destination); o.start(); setTimeout(() => { o.stop(); c.close(); }, ms); } catch (e) {}
+}
+let clearTimer = null;
+function reset(message, c, ms = 4000) { step = 'USER'; data = {}; msg = message || ''; cls = c || ''; draw();
+  clearTimeout(clearTimer);
+  if (msg) clearTimer = setTimeout(() => { msg = ''; cls = ''; draw(); }, ms); }
+
+// 発注点以下の通知（実機の degimono/alert と同じ中身）を WebSocket で受ける。
+// つながらないとき（Flask 版など）は、出庫の応答の alert で代わりに表示する
+let wsOk = false;
+function connectAlert() {
+  let ws;
+  try { ws = new WebSocket((location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws/alert'); }
+  catch (e) { return; }
+  const state = document.getElementById('ws-state');
+  ws.onopen = () => { wsOk = true; state.textContent = '（通知: 接続中）'; };
+  ws.onclose = () => { wsOk = false; state.textContent = '（通知: 未接続）'; setTimeout(connectAlert, 3000); };
+  ws.onmessage = e => {
+    let a; try { a = JSON.parse(e.data); } catch (err) { return; }
+    beep(1200, 600);
+    reset(a.text, a.ordered ? 'warn' : 'alert', 8000);  // 発注済みなら黄土色、未発注なら赤
+  };
+}
+
+// QRの中身は「項目名,値」（例: 社員名,山田太郎）。項目名で何のQRかを判定する
+const LABEL_TO_STEP = { '社員名':'USER', '部署名':'DEPT', '品番':'ITEM', '個数':'QTY' };
+
+function onScan(text) {
+  const [label, ...rest] = text.trim().split(',');
+  const kind = LABEL_TO_STEP[label.trim()];
+  const expect = step;
+  if (kind !== expect) { beep(300, 300); msg = 'ピピッ! 順序が違います\n(' + ({USER:'社員',DEPT:'部署',ITEM:'部品',QTY:'個数'}[expect] || '') + 'QRを読んでください)'; cls = ''; draw();
+    setTimeout(() => { msg = ''; draw(); }, 1500); return; }
+  msg = ''; cls = '';
+  if (kind === 'USER') { data.name = rest[0]; step = 'DEPT'; }
+  else if (kind === 'DEPT') { data.dept = rest[0]; step = 'ITEM'; }
+  else if (kind === 'ITEM') { data.part = rest[0]; step = 'QTY'; }
+  else if (kind === 'QTY') { data.qty = Number(rest[0]); step = 'CONFIRM'; }
+  draw();
+}
+async function decide() {
+  if (step !== 'CONFIRM') return;
+  try {
+    const res = await fetch('/api/checkout', { method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ user_name: data.name, department: data.dept, part_id: data.part, quantity: data.qty }) });
+    const r = await res.json();
+    if (r.status !== 'ok') { beep(300, 400); return reset('エラー\n' + r.message, 'alert'); }
+    let t = '登録完了\n' + r.part_name + '\n在庫: ' + r.stock;
+    // 通知は WebSocket で届くので、ここでは上書きしない（応答と通知のどちらが先に届くかは決まっていない）
+    if (r.alert && wsOk) { step = 'USER'; data = {}; if (!msg) draw(); return; }
+    if (r.alert) { beep(1200, 600); t += '\n!! ' + r.alert_message; return reset(t, 'alert'); }
+    reset(t, 'ok');
+  } catch (e) { beep(300, 400); reset('通信エラー', 'alert'); }
+}
+document.getElementById('btnA').onclick = decide;
+document.getElementById('btnB').onclick = () => { if (step !== 'USER') reset('取消しました'); };
+scan.onkeydown = e => { if (e.key === 'Enter' && scan.value.trim()) { onScan(scan.value); scan.value = ''; } };
+
+function addButtons(id, items) {
+  const box = document.getElementById(id);
+  items.forEach(([label, text]) => { const b = document.createElement('button'); b.textContent = label;
+    b.onclick = () => { scan.value = text; scan.focus(); }; box.appendChild(b); });
+}
+(async () => {
+  const emp = await (await fetch('/api/employees')).json();
+  addButtons('qr-user', emp.employees.map(e => [e.name, '社員名,' + e.name]));
+  addButtons('qr-dept', emp.departments.map(d => [d, '部署名,' + d]));
+  const parts = await (await fetch('/api/parts')).json();
+  addButtons('qr-item', parts.map(p => [p.id + ' ' + p.name, '品番,' + p.id]));
+  addButtons('qr-qty', [1, 2, 3, 5, 10].map(n => [n + '個', '個数,' + n]));
+  draw();
+})();
+connectAlert();
+</script>
+</body>
+</html>

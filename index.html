@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>在庫管理システム</title>
+<style>
+  :root { --yellow:#ffff00; --pink:#ffc9b8; --blue:#0a97e8; --green:#4cc552; --orange:#f58a1f; --red:#e8400c; }
+  * { box-sizing: border-box; }
+  body { margin:0; padding:16px; background:#f4f4f4; font-family:"Meiryo","Hiragino Kaku Gothic ProN",sans-serif; color:#111; }
+  .frame { background:var(--yellow); border:3px solid #000; padding:16px 20px 20px; max-width:1100px; margin:0 auto; }
+  .head { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+  .head h1 { margin:0; font-size:30px; }
+  .head .btns { display:flex; gap:8px; }
+  button { font:inherit; cursor:pointer; }
+  .btn { background:#fff; border:1px solid #888; padding:8px 14px; font-weight:bold; }
+  .btn.blue { background:var(--blue); color:#fff; border-color:var(--blue); }
+  .btn.green { background:var(--green); border-color:#2d9c33; color:#000; font-size:18px; padding:10px 14px; }
+  .btn.red { background:var(--red); border-color:#b02e08; color:#fff; font-size:20px; padding:12px; width:100%; }
+  .btn.gray { background:#ddd; }
+  .btn:disabled { opacity:.5; cursor:not-allowed; }
+  .grid { display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+  .card { background:#fff; border:1px solid #bbb; padding:12px; }
+  .card.cream { background:#fffbd0; }
+  .card.pink { background:var(--pink); }
+  .card h2 { margin:0 0 8px; font-size:20px; }
+  .row { display:flex; gap:8px; }
+  input, select { font:inherit; padding:8px; border:1px solid #999; background:#fff; width:100%; }
+  label { display:block; margin:10px 0 4px; font-weight:bold; }
+  .chips { margin-top:8px; display:flex; flex-wrap:wrap; gap:6px; }
+  .chip { background:#fff; border:1px solid #999; padding:4px 10px; border-radius:14px; font-size:13px; }
+  .chip.sel { background:#222; color:#fff; }
+  /* 工場配置図 */
+  .map { display:grid; gap:6px; grid-template-columns: 1.2fr 1fr 1fr 1.2fr; grid-template-rows: repeat(4, 54px);
+         grid-template-areas: "proc A B asm" "proc C D asm" "proc E F asm" "proc shelf shelf asm";
+         border:6px solid #555; padding:8px; background:#fff; }
+  .map div { background:#ddd; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:18px; }
+  .map .proc { grid-area:proc; font-size:15px; } .map .asm { grid-area:asm; font-size:15px; }
+  .map .shelf { grid-area:shelf; font-size:14px; }
+  .map .hit { background:var(--red); color:#fff; outline:3px solid #000; }
+  dl.info { margin:0; }
+  dl.info div { display:flex; padding:3px 0; }
+  dl.info dt { width:90px; font-weight:bold; } dl.info dd { margin:0; }
+  .banner { text-align:center; color:#fff; font-weight:bold; font-size:20px; padding:14px; margin-top:12px; border:1px solid #b02e08; }
+  .banner.wait { background:var(--orange); }
+  .banner.need { background:var(--red); }
+  table { width:100%; border-collapse:collapse; background:#fff; }
+  th, td { border:1px solid #ccc; padding:8px; text-align:center; }
+  th { background:#eee; }
+  tr.row-sel td { background:var(--pink); }
+  tbody tr.clickable { cursor:pointer; }
+  .tag { display:inline-block; padding:3px 10px; font-weight:bold; border:1px solid; }
+  .tag.need { background:var(--orange); border-color:#c06c10; } .tag.ok { background:#6fdc74; border-color:#3a9c40; }
+  .tabs { display:flex; gap:12px; margin-bottom:10px; }
+  .tab { flex:1; max-width:250px; text-align:center; padding:12px; font-size:20px; font-weight:bold; background:#fff; border:1px solid #888; }
+  .tab.on { background:var(--blue); color:#fff; border-color:var(--blue); }
+  .legend { font-size:13px; margin:6px 0 8px; display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .legend .box { width:28px; height:20px; background:var(--pink); border:1px solid #aaa; }
+  .recv-box { background:#d9f5d6; border:1px solid #2d9c33; padding:8px; font-weight:bold; }
+  .toast { position:fixed; left:50%; bottom:24px; transform:translateX(-50%); background:#222; color:#fff; padding:12px 22px; border-radius:6px; z-index:9; }
+  .toast.err { background:#b00020; }
+  .muted { color:#555; font-size:13px; }
+  .orderlayout { display:grid; grid-template-columns: 1.1fr 1fr; gap:16px; }
+  @media (max-width: 820px) { .grid, .orderlayout { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="frame" id="app"></div>
+<div class="toast" id="toast" style="display:none"></div>
+
+<script>
+const S = {
+  view: 'main',              // main | orders | register
+  locations: [],             // 保管場所の選択肢 (/api/locations)
+  reg: { id:'', name:'', location:'', stock:'0', reorder:'0', departments:'', dept:'', emp:'' },  // 部品登録フォーム
+  tab: 'unordered',          // unordered | waiting
+  part: null,                // 入出庫管理画面で表示中の部品
+  results: [],               // 検索結果
+  query: '',
+  selectedPart: null,        // 発注管理: 選択中の部品(未発注)
+  receivingOrder: null,      // 入庫登録中の発注
+  receiver: null,            // 入庫担当者 {id,name} ― 入荷登録を終了するまで保持
+  orderer: { dept: '', emp: '' },
+  recvPick: { dept: '', emp: '' },
+  deptList: [], employees: []
+};
+try { const r = sessionStorage.getItem('receiver'); if (r) S.receiver = JSON.parse(r); } catch (e) {}
+
+const $app = document.getElementById('app');
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const today = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); };
+
+async function api(path, opts) {
+  const res = await fetch(path, opts);
+  let body = null; try { body = await res.json(); } catch (e) {}
+  if (!res.ok) throw new Error((body && body.message) || ('通信エラー ' + res.status));
+  return body;
+}
+const post = (path, data) => api(path, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
+
+let toastTimer;
+function toast(msg, isErr) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast' + (isErr ? ' err' : ''); t.style.display = 'block';
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.style.display = 'none', 3500);
+}
+function setReceiver(r) {
+  S.receiver = r;
+  try { r ? sessionStorage.setItem('receiver', JSON.stringify(r)) : sessionStorage.removeItem('receiver'); } catch (e) {}
+}
+
+/* ---------- 部署→従業員プルダウン ---------- */
+function empPicker(id, st) {
+  const emps = S.employees.filter(e => e.department === st.dept);
+  return `
+    <select id="${id}-dept"><option value="">部署を選択</option>
+      ${S.deptList.map(d => `<option ${d === st.dept ? 'selected' : ''}>${esc(d)}</option>`).join('')}</select>
+    <select id="${id}-emp" style="margin-top:6px" ${st.dept ? '' : 'disabled'}><option value="">従業員を選択</option>
+      ${emps.map(e => `<option value="${esc(e.id)}" ${e.id === st.emp ? 'selected' : ''}>${esc(e.name)}</option>`).join('')}</select>`;
+}
+function bindPicker(id, st) {
+  const d = document.getElementById(id + '-dept'), e = document.getElementById(id + '-emp');
+  d.onchange = () => { st.dept = d.value; st.emp = ''; render(false); };
+  e.onchange = () => { st.emp = e.value; };
+}
+
+/* ---------- 入出庫管理画面 ---------- */
+function mapHtml(loc) {
+  const cell = k => `<div class="${loc === k ? 'hit' : ''}" style="grid-area:${k}">${k}</div>`;
+  return `<div class="map">
+    <div class="proc">加工エリア</div>${['A','B','C','D','E','F'].map(cell).join('')}
+    <div class="shelf ${loc === '部品棚' ? 'hit' : ''}">部品棚</div><div class="asm">組立エリア</div></div>`;
+}
+function infoHtml(p) {
+  const w = p.waiting_order;
+  const status = w ? `発注済・入荷待ち（入荷予定 ${esc(w.expected_date)}）` : '未発注';
+  const o = S.receivingOrder;
+  return `<dl class="info">
+    <div><dt>品名</dt><dd>${esc(p.name)}</dd></div>
+    <div><dt>品番</dt><dd>${esc(p.id)}</dd></div>
+    <div><dt>保管場所</dt><dd>${esc(p.location)}</dd></div>
+    <div><dt>在庫数</dt><dd>${p.stock} 個　　<b>発注点：</b>${p.reorder_point} 個</dd></div>
+    <div><dt>使用部署</dt><dd>${esc(p.departments)}</dd></div>
+    ${o ? `<div><dt>発注数量</dt><dd>${o.quantity} 個</dd></div>` : ''}
+    <div><dt>発注状況</dt><dd>${status}</dd></div></dl>`;
+}
+function receivePanel() {
+  const o = S.receivingOrder;
+  const who = S.receiver
+    ? `<div class="row" style="align-items:center"><div class="recv-box" style="flex:1">入庫担当者：${esc(S.receiver.name)}</div>
+         <button class="btn" id="btn-endrecv">入荷登録を終了</button></div>`
+    : `<label>入庫担当者（初回のみ設定）</label>${empPicker('recv', S.recvPick)}
+       <button class="btn blue" id="btn-setrecv" style="margin-top:8px">担当者を設定</button>`;
+  return `<div class="card" style="margin-top:12px"><h2>入庫登録</h2>${who}
+    <label>実入荷日</label><input type="date" id="recv-date" value="${today()}">
+    <label>入荷数量</label><input type="number" min="1" id="recv-qty" value="${o.quantity}">
+    <div class="row" style="margin-top:12px">
+      <button class="btn green" id="btn-confirm" style="flex:2" ${S.receiver ? '' : 'disabled'}>入庫登録を確定</button>
+      <button class="btn gray" id="btn-back" style="flex:1">一覧へ戻る</button></div></div>`;
+}
+function mainView() {
+  const p = S.part;
+  let right = `<div class="card pink"><h2>部品情報</h2><p class="muted">部品を検索してください。</p></div>`;
+  if (p) {
+    let banner = '';
+    if (p.below_point && !S.receivingOrder) {
+      banner = p.waiting_order
+        ? `<div class="banner wait">在庫が発注点以下です<br>発注済・入荷待ち</div>`
+        : `<div style="margin-top:12px"><div class="banner need" style="margin:0 0 8px">在庫が発注点以下です（未発注）</div>
+             <button class="btn red" id="btn-order">発注登録</button></div>`;
+    }
+    right = `<div class="card pink"><h2>部品情報</h2>${infoHtml(p)}</div>
+             ${S.receivingOrder ? receivePanel() : banner}`;
+  }
+  const loc = p ? p.location : '';
+  const chips = S.results.map(r => `<button class="chip ${p && p.id === r.id ? 'sel' : ''}" data-id="${esc(r.id)}">${esc(r.id)} ${esc(r.name)}</button>`).join('');
+  return `
+  <div class="head"><h1>入出庫管理</h1>
+    <div class="btns"><a class="btn" href="/download/history.csv" style="text-decoration:none;color:#000">入出庫履歴.csv出力</a>
+      <button class="btn" id="btn-open-reg">部品登録</button>
+      <button class="btn" id="btn-open-orders">発注管理を開く</button></div></div>
+  <div class="grid">
+    <div>
+      <div class="card cream"><h2>部品検索</h2>
+        <div class="row"><input id="q" placeholder="品名・品番を入力" value="${esc(S.query)}"><button class="btn blue" id="btn-search" style="width:100px">検索</button></div>
+        <div class="chips">${chips || '<span class="muted">該当なし</span>'}</div></div>
+      <div class="card" style="margin-top:12px"><h2>工場配置図</h2>${mapHtml(loc)}
+        <p class="muted">工場配置図は表示例です。実際の写真・配置図を固定表示します。</p></div>
+    </div>
+    <div>${right}</div>
+  </div>`;
+}
+function bindMain() {
+  const q = document.getElementById('q');
+  const go = () => search(q.value);
+  document.getElementById('btn-search').onclick = go;
+  q.onkeydown = e => { if (e.key === 'Enter') go(); };
+  document.getElementById('btn-open-orders').onclick = () => openOrders('unordered');
+  document.getElementById('btn-open-reg').onclick = () => { S.view = 'register'; render(false); };
+  document.querySelectorAll('.chip[data-id]').forEach(b => b.onclick = async () => {
+    S.part = await api('/api/parts/' + encodeURIComponent(b.dataset.id)); S.receivingOrder = null; render(false);
+  });
+  const bo = document.getElementById('btn-order');
+  if (bo) bo.onclick = () => openOrders('unordered', S.part.id);
+  if (S.receivingOrder) bindReceive();
+}
+function bindReceive() {
+  if (S.receiver) {
+    document.getElementById('btn-endrecv').onclick = () => { setReceiver(null); S.receivingOrder = null; openOrders('waiting'); toast('入荷登録を終了しました'); };
+  } else {
+    bindPicker('recv', S.recvPick);
+    document.getElementById('btn-setrecv').onclick = () => {
+      const e = S.employees.find(x => x.id === S.recvPick.emp);
+      if (!e) return toast('入庫担当者を選択してください', true);
+      setReceiver({ id: e.id, name: e.name }); render(false);
+    };
+  }
+  document.getElementById('btn-back').onclick = () => { S.receivingOrder = null; openOrders('waiting'); };
+  document.getElementById('btn-confirm').onclick = async () => {
+    try {
+      const r = await post('/api/checkin', {
+        order_id: S.receivingOrder.id, employee_id: S.receiver.id,
+        received_date: document.getElementById('recv-date').value,
+        quantity: Number(document.getElementById('recv-qty').value) });
+      toast(r.message + '（在庫 ' + r.stock + '）');
+      S.receivingOrder = null; S.part = null; await openOrders('waiting');
+    } catch (e) { toast(e.message, true); }
+  };
+}
+async function search(q) {
+  S.query = q;
+  S.results = await api('/api/parts?q=' + encodeURIComponent(q));
+  S.receivingOrder = null;
+  S.part = S.results.length === 1 ? S.results[0] : null;
+  render(false);
+}
+
+/* ---------- 発注管理一覧 ---------- */
+async function openOrders(tab, partId) {
+  S.view = 'orders'; S.tab = tab;
+  S.selectedPart = null;
+  if (tab === 'unordered') {
+    S.unordered = await api('/api/orders/unordered');
+    if (partId) S.selectedPart = S.unordered.find(p => p.id === partId) || null;
+  } else {
+    S.waiting = await api('/api/orders/waiting');
+  }
+  render(false);
+}
+function ordersView() {
+  const tabs = `<div class="tabs">
+    <button class="tab ${S.tab === 'unordered' ? 'on' : ''}" data-tab="unordered">未発注</button>
+    <button class="tab ${S.tab === 'waiting' ? 'on' : ''}" data-tab="waiting">入荷待ち</button></div>`;
+  let body = '';
+  if (S.tab === 'unordered') {
+    const sp = S.selectedPart;
+    const rows = (S.unordered || []).map(p => `
+      <tr class="clickable ${sp && sp.id === p.id ? 'row-sel' : ''}" data-id="${esc(p.id)}">
+        <td>${esc(p.id)}</td><td>${esc(p.name)}</td><td>${p.stock}</td><td>${p.reorder_point}</td>
+        <td><span class="tag ${p.below_point ? 'need' : 'ok'}">${p.below_point ? '要発注' : '発注不要'}</span></td></tr>`).join('');
+    const form = sp ? `
+      <div class="card" style="background:var(--pink)"><h2>発注結果の登録</h2>
+        <div class="card cream" style="font-size:18px">${esc(sp.id)}　${esc(sp.name)}</div>
+        <label>発注担当者</label>${empPicker('ord', S.orderer)}
+        <label>発注数量</label><input type="number" min="1" id="ord-qty" placeholder="例: 10">
+        <label>発注日</label><input type="date" id="ord-date" value="${today()}">
+        <label>入荷予定日</label><input type="date" id="ord-exp">
+        <button class="btn green" id="btn-save" style="width:100%;margin-top:14px">発注結果を保存</button>
+        <p class="muted" style="text-align:center">保存すると「入荷待ち」へ移動</p></div>`
+      : `<div class="card" style="background:var(--pink)"><h2>発注結果の登録</h2><p class="muted">左の一覧から部品を選択してください。</p></div>`;
+    body = `<div class="orderlayout"><div>
+        <div class="legend"><span class="box"></span>選択中 <span class="tag need">要発注</span> <span class="tag ok">発注不要</span>
+          <span>要発注：在庫 ≦ 発注点 ／ 発注不要：在庫 ＞ 発注点</span></div>
+        <table><thead><tr><th>品番</th><th>品名</th><th>在庫</th><th>発注点</th><th>状態</th></tr></thead><tbody>${rows}</tbody></table></div>
+        <div>${form}</div></div>`;
+  } else {
+    const rows = (S.waiting || []).map(o => `
+      <tr><td>${esc(o.part_id)}</td><td>${esc(o.part_name)}</td><td>${o.quantity}</td><td>${esc(o.orderer_name)}</td>
+        <td>${esc(o.ordered_date)}</td><td>${esc(o.expected_date)}</td>
+        <td><button class="btn green" style="font-size:15px;padding:6px 12px" data-oid="${o.id}">入庫登録</button></td></tr>`).join('');
+    const who = S.receiver ? `<p class="recv-box" style="display:inline-block">入庫担当者：${esc(S.receiver.name)}
+        <button class="btn" id="btn-endrecv2" style="margin-left:8px;padding:3px 10px">入荷登録を終了</button></p>` : '';
+    body = `${who}<table><thead><tr><th>品番</th><th>品名</th><th>発注数量</th><th>発注担当者</th><th>発注日</th><th>入荷予定日</th><th>操作</th></tr></thead>
+      <tbody>${rows || '<tr><td colspan="7" class="muted">入荷待ちの発注はありません</td></tr>'}</tbody></table>`;
+  }
+  return `<div class="head"><h1>発注管理一覧</h1>
+    <button class="btn" id="btn-back-main">入出庫管理画面へ戻る</button></div>${tabs}${body}`;
+}
+function bindOrders() {
+  document.getElementById('btn-back-main').onclick = async () => {
+    try { if (S.part) S.part = await api('/api/parts/' + encodeURIComponent(S.part.id)); } catch (e) {}
+    try { S.results = await api('/api/parts?q=' + encodeURIComponent(S.query)); } catch (e) {}
+    S.view = 'main'; render(false);
+  };
+  document.querySelectorAll('.tab').forEach(b => b.onclick = () => openOrders(b.dataset.tab));
+  if (S.tab === 'unordered') {
+    document.querySelectorAll('tr[data-id]').forEach(tr => tr.onclick = () => {
+      S.selectedPart = S.unordered.find(p => p.id === tr.dataset.id); render(false);
+    });
+    if (S.selectedPart) {
+      bindPicker('ord', S.orderer);
+      document.getElementById('btn-save').onclick = async () => {
+        try {
+          const r = await post('/api/orders', {
+            part_id: S.selectedPart.id, employee_id: S.orderer.emp,
+            quantity: Number(document.getElementById('ord-qty').value),
+            ordered_date: document.getElementById('ord-date').value,
+            expected_date: document.getElementById('ord-exp').value });
+          toast(r.message); await openOrders('waiting');
+        } catch (e) { toast(e.message, true); }
+      };
+    }
+  } else {
+    document.querySelectorAll('button[data-oid]').forEach(b => b.onclick = async () => {
+      const o = S.waiting.find(x => String(x.id) === b.dataset.oid);
+      S.part = await api('/api/parts/' + encodeURIComponent(o.part_id));
+      S.receivingOrder = o; S.results = [S.part]; S.query = o.part_id;
+      S.view = 'main'; render(false);
+    });
+    const e2 = document.getElementById('btn-endrecv2');
+    if (e2) e2.onclick = () => { setReceiver(null); toast('入荷登録を終了しました'); render(false); };
+  }
+}
+
+/* ---------- 部品登録 ---------- */
+function registerView() {
+  const r = S.reg;
+  const field = (key, label, attrs) =>
+    `<label>${label}</label><input id="reg-${key}" value="${esc(r[key])}" ${attrs || ''}>`;
+  return `
+  <div class="head"><h1>部品登録</h1>
+    <button class="btn" id="btn-back-main">入出庫管理画面へ戻る</button></div>
+  <div class="grid">
+    <div class="card cream"><h2>新しい部品の情報</h2>
+      ${field('id', '品番（必須）', 'maxlength="40" placeholder="例: AB-1234" autocomplete="off"')}
+      ${field('name', '品名（必須）', 'placeholder="例: 近接センサー"')}
+      <label>保管場所（必須）</label>
+      <select id="reg-location"><option value="">選択してください</option>
+        ${S.locations.map(l => `<option ${l === r.location ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select>
+      <div class="row">
+        <div style="flex:1">${field('stock', '初期在庫', 'type="number" min="0" step="1"')}</div>
+        <div style="flex:1">${field('reorder', '発注点', 'type="number" min="0" step="1"')}</div></div>
+      ${field('departments', '使用部署（任意）', 'placeholder="例: 製造部、設備保全課"')}
+      <label>登録担当者（必須）</label>${empPicker('reg', r)}
+      <div class="row" style="margin-top:14px">
+        <button class="btn green" id="btn-reg" style="flex:2">登録する</button>
+        <button class="btn blue" id="btn-reg-more" style="flex:2">登録して続けて入力</button></div>
+      <p class="muted">品番は重複できません。空白と / \\ ? # % は使えません。</p></div>
+    <div class="card"><h2>保管場所（工場配置図）</h2>${mapHtml(r.location)}
+      <p class="muted">選んだ保管場所が赤く表示されます。</p></div>
+  </div>`;
+}
+function bindRegister() {
+  const r = S.reg;
+  // 入力途中の値を保持（担当者プルダウン変更などで再描画しても消えないように）
+  [['id','id'],['name','name'],['stock','stock'],['reorder','reorder'],['departments','departments']].forEach(([k, id]) => {
+    document.getElementById('reg-' + id).oninput = e => { r[k] = e.target.value; };
+  });
+  document.getElementById('reg-location').onchange = e => { r.location = e.target.value; render(false); };
+  bindPicker('reg', r);
+  document.getElementById('btn-back-main').onclick = () => { S.view = 'main'; render(false); };
+
+  const submit = async more => {
+    try {
+      const res = await post('/api/parts', {
+        part_id: r.id, name: r.name, location: r.location,
+        stock: r.stock === '' ? 0 : Number(r.stock), reorder_point: r.reorder === '' ? 0 : Number(r.reorder),
+        departments: r.departments, employee_id: r.emp });
+      toast(res.message);
+      // 担当者は保持し、部品の入力項目だけ初期化
+      Object.assign(r, { id:'', name:'', location:'', stock:'0', reorder:'0', departments:'' });
+      if (more) { render(false); return; }
+      S.query = res.part.id;
+      S.results = await api('/api/parts?q=' + encodeURIComponent(res.part.id));
+      S.part = res.part; S.receivingOrder = null; S.view = 'main'; render(false);
+    } catch (e) { toast(e.message, true); }
+  };
+  document.getElementById('btn-reg').onclick = () => submit(false);
+  document.getElementById('btn-reg-more').onclick = () => submit(true);
+}
+
+function render() {
+  $app.innerHTML = S.view === 'main' ? mainView() : S.view === 'register' ? registerView() : ordersView();
+  S.view === 'main' ? bindMain() : S.view === 'register' ? bindRegister() : bindOrders();
+}
+
+(async function init() {
+  try {
+    const e = await api('/api/employees');
+    S.deptList = e.departments; S.employees = e.employees;
+    S.results = await api('/api/parts?q=');
+    S.locations = await api('/api/locations');
+  } catch (err) { toast(err.message, true); }
+  render();
+})();
+</script>
+</body>
+</html>

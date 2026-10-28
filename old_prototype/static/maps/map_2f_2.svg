@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="100%" height="100%">
+  <defs>
+    <style>
+      .bg { fill: #f8fafc; }
+      .wall { fill: none; stroke: #334155; stroke-width: 4; }
+      .room-label { font-family: sans-serif; font-size: 16px; font-weight: bold; fill: #64748b; }
+      .shelf { fill: #cbd5e1; stroke: #94a3b8; stroke-width: 2; rx: 4; }
+      .shelf-text { font-family: sans-serif; font-size: 14px; font-weight: bold; fill: #1e293b; text-anchor: middle; dominant-baseline: middle; }
+      .highlight { fill: #ef4444; stroke: #b91c1c; stroke-width: 3; rx: 4; filter: drop-shadow(0 0 8px rgba(239,68,68,0.7)); }
+      .highlight-text { font-family: sans-serif; font-size: 15px; font-weight: bold; fill: #ffffff; text-anchor: middle; dominant-baseline: middle; }
+      .pin { fill: #dc2626; animation: bounce 1s infinite alternate; }
+      .corridor { fill: #f1f5f9; stroke: #e2e8f0; stroke-dasharray: 4; }
+      .legend { font-family: sans-serif; font-size: 12px; fill: #475569; }
+    </style>
+  </defs>
+
+  <!-- Background Floor -->
+  <rect width="600" height="400" class="bg" />
+  
+  <!-- Outer Walls -->
+  <rect x="20" y="20" width="560" height="360" rx="8" class="wall" />
+  
+  <!-- Entrance / Doors -->
+  <line x1="260" y1="380" x2="340" y2="380" stroke="#ffffff" stroke-width="6" />
+  <text x="300" y="372" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#64748b" font-weight="bold">出入口 (2Fフロア)</text>
+  
+  <!-- Title / Floor Indicator -->
+  <rect x="35" y="35" width="120" height="32" rx="6" fill="#1e293b" />
+  <text x="95" y="56" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="bold" fill="#ffffff">第2工場 2F</text>
+  
+  <!-- Passageway -->
+  <rect x="230" y="70" width="140" height="290" class="corridor" />
+  <text x="300" y="220" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#94a3b8">中央通路</text>
+
+  <!-- Left Aisle (Zone 1) -->
+  <text x="120" y="75" text-anchor="middle" class="room-label">Aエリア (部品棚①〜③)</text>
+  
+  <!-- Shelf 1 -->
+  <rect x="50" y="95" width="140" height="60" class="shelf" />
+  <text x="120" y="125" class="shelf-text">棚 ① (端子・コネクタ)</text>
+  
+  <!-- Shelf 2: TARGET HIGHLIGHTED -->
+  <rect x="50" y="175" width="140" height="65" class="highlight" />
+  <text x="120" y="207" class="highlight-text">★ 棚 ② (近接センサー)</text>
+  
+  <!-- Pin Indicator on Shelf 2 -->
+  <circle cx="190" cy="175" r="8" fill="#ef4444" stroke="#ffffff" stroke-width="2" />
+  <text x="190" y="160" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="bold" fill="#dc2626">ここ！</text>
+
+  <!-- Shelf 3 -->
+  <rect x="50" y="260" width="140" height="60" class="shelf" />
+  <text x="120" y="290" class="shelf-text">棚 ③ (リレー・基板)</text>
+
+  <!-- Right Aisle (Zone 2) -->
+  <text x="470" y="75" text-anchor="middle" class="room-label">Bエリア (部品棚④〜⑥)</text>
+  
+  <!-- Shelf 4 -->
+  <rect x="400" y="95" width="150" height="60" class="shelf" />
+  <text x="475" y="125" class="shelf-text">棚 ④ (電源ユニット)</text>
+  
+  <!-- Shelf 5 -->
+  <rect x="400" y="175" width="150" height="60" class="shelf" />
+  <text x="475" y="205" class="shelf-text">棚 ⑤ (配線・ケーブル)</text>
+
+  <!-- Shelf 6 -->
+  <rect x="400" y="260" width="150" height="60" class="shelf" />
+  <text x="475" y="290" class="shelf-text">棚 ⑥ (治具・工具)</text>
+
+  <!-- Legend Box -->
+  <rect x="35" y="335" width="230" height="32" rx="4" fill="#ffffff" stroke="#e2e8f0" />
+  <rect x="45" y="343" width="16" height="16" rx="3" fill="#ef4444" />
+  <text x="68" y="356" class="legend">現在選択中の保管場所: <tspan font-weight="bold" fill="#ef4444">2F-②</tspan></text>
+</svg>

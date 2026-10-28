@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>在庫管理システム</title>
+  <link rel="stylesheet" href="static/css/style.css">
+</head>
+<body>
+
+  <!-- 画面最上部中央のラベル (image.png の上端タブ) -->
+  <div class="image-label-wrapper">
+    <div class="image-label-box">イメージ</div>
+  </div>
+
+  <!-- メインフレーム (image.png の黄色い大枠) -->
+  <div class="main-canvas">
+
+    <!-- 右上: 入出庫履歴.csv出力ボタン (image.png 右上) -->
+    <div class="top-action-bar">
+      <button id="btnExportCsv" class="btn-csv-export">
+        入出庫履歴.csv出力
+      </button>
+    </div>
+
+    <!-- 2カラム構成 -->
+    <div class="wireframe-grid">
+
+      <!-- ========================================================
+           左カラム: 部品検索 ＆ マップ
+           ======================================================== -->
+      <div class="left-pane">
+        <h1 class="section-title">部品検索</h1>
+
+        <!-- 検索入力行 (image.png 左上) -->
+        <div class="search-bar-row">
+          <input 
+            type="text" 
+            id="searchInput" 
+            class="search-input" 
+            placeholder="品名・品番入力、QR読み取り"
+            value="AB-1234"
+            list="partsDatalist"
+          >
+          <datalist id="partsDatalist">
+            <option value="AB-1234">近接センサー</option>
+            <option value="CD-5678">マイクロスイッチ</option>
+            <option value="EF-9012">ステッピングモーター</option>
+            <option value="GH-3456">リニアガイドレール</option>
+            <option value="JK-7890">電磁開閉器</option>
+          </datalist>
+          <button id="btnSearch" class="btn-search">検索</button>
+        </div>
+
+        <!-- マップ表示枠 (image.png 左下: 完全な白枠 ＋ 中央に「マップ」文字) -->
+        <div class="map-wireframe-box">
+          <div class="map-wireframe-text">マップ</div>
+        </div>
+      </div>
+
+      <!-- ========================================================
+           右カラム: 部品情報 ＆ 共通入出庫 ＆ 発注警告
+           ======================================================== -->
+      <div class="right-pane">
+
+        <!-- 部品情報パネル (image.png 右側: 薄橙色のボックス) -->
+        <div class="info-peach-panel">
+          <div class="info-lines-container">
+            <div class="info-row">
+              <span class="info-label">品名：</span>
+              <span id="dispPartName" class="info-val">近接センサー</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">品番：</span>
+              <span id="dispPartId" class="info-val">AB-1234</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">保管場所：</span>
+              <span id="dispPartLocation" class="info-val">２Ｆー②</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">在庫数：</span>
+              <span id="dispPartStock" class="info-val">２</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">発注点：</span>
+              <span id="dispPartReorder" class="info-val">２</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">使用部署：</span>
+              <span id="dispPartDepts" class="info-val">T2、T4</span>
+            </div>
+          </div>
+
+          <!-- 共通化された入出庫操作 (部署プルダウン ➜ ソートされた従業員プルダウン) -->
+          <div class="inventory-ops-box">
+            <!-- 入庫 / 出庫 切り替え -->
+            <div class="ops-mode-toggle">
+              <button id="btnTypeIn" class="mode-btn active in-mode">📥 入庫 (＋)</button>
+              <button id="btnTypeOut" class="mode-btn out-mode">📤 出庫 (−)</button>
+            </div>
+
+            <!-- 数量・部署・ソート従業員 -->
+            <div class="ops-controls-row">
+              <!-- 数量ステッパー -->
+              <div class="qty-control">
+                <button id="btnQtyMinus" class="qty-btn">−</button>
+                <input type="number" id="opsQty" class="qty-input" value="1" min="1">
+                <button id="btnQtyPlus" class="qty-btn">＋</button>
+              </div>
+
+              <!-- 部署プルダウン -->
+              <select id="deptSelect" class="custom-select" title="部署を選択"></select>
+
+              <!-- ソートされた従業員プルダウン -->
+              <select id="workerSelect" class="custom-select" title="従業員を選択"></select>
+            </div>
+
+            <!-- 共通実行ボタン -->
+            <button id="btnExecuteOps" class="btn-execute in-style">
+              入庫を実行
+            </button>
+          </div>
+        </div>
+
+        <!-- 警告バナー (image.png 右下: 発注してください！) -->
+        <div id="alertBanner" class="alert-banner-box">
+          発注してください！
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- トースト通知 -->
+  <div id="toastNotice" class="toast-notice"></div>
+
+  <script src="static/js/main.js"></script>
+</body>
+</html>
