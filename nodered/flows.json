@@ -1,15 +1,15 @@
 [
   {
-    "id": "dg000002",
+    "id": "dc000001",
     "type": "tab",
-    "label": "画面",
+    "label": "画面（完成品）",
     "disabled": false,
     "info": "元の index.html / m5_dummy.html をそのまま返す。"
   },
   {
-    "id": "dg000003",
-    "z": "dg000002",
-    "x": 140,
+    "id": "dc000002",
+    "z": "dc000001",
+    "x": 120,
     "y": 40,
     "wires": [],
     "type": "comment",
@@ -17,13 +17,13 @@
     "info": ""
   },
   {
-    "id": "dg000004",
-    "z": "dg000002",
-    "x": 140,
+    "id": "dc000003",
+    "z": "dc000001",
+    "x": 120,
     "y": 100,
     "wires": [
       [
-        "dg000005"
+        "dc000004"
       ]
     ],
     "type": "http in",
@@ -34,13 +34,13 @@
     "swaggerDoc": ""
   },
   {
-    "id": "dg000005",
-    "z": "dg000002",
-    "x": 340,
+    "id": "dc000004",
+    "z": "dc000001",
+    "x": 310,
     "y": 100,
     "wires": [
       [
-        "dg000006"
+        "dc000005"
       ]
     ],
     "type": "template",
@@ -53,9 +53,9 @@
     "output": "str"
   },
   {
-    "id": "dg000006",
-    "z": "dg000002",
-    "x": 540,
+    "id": "dc000005",
+    "z": "dc000001",
+    "x": 500,
     "y": 100,
     "wires": [],
     "type": "http response",
@@ -66,13 +66,13 @@
     }
   },
   {
-    "id": "dg000007",
-    "z": "dg000002",
-    "x": 140,
+    "id": "dc000006",
+    "z": "dc000001",
+    "x": 120,
     "y": 160,
     "wires": [
       [
-        "dg000005"
+        "dc000004"
       ]
     ],
     "type": "http in",
@@ -83,13 +83,13 @@
     "swaggerDoc": ""
   },
   {
-    "id": "dg000008",
-    "z": "dg000002",
-    "x": 140,
+    "id": "dc000007",
+    "z": "dc000001",
+    "x": 120,
     "y": 220,
     "wires": [
       [
-        "dg000009"
+        "dc000008"
       ]
     ],
     "type": "http in",
@@ -100,13 +100,13 @@
     "swaggerDoc": ""
   },
   {
-    "id": "dg000009",
-    "z": "dg000002",
-    "x": 340,
+    "id": "dc000008",
+    "z": "dc000001",
+    "x": 310,
     "y": 220,
     "wires": [
       [
-        "dg00000a"
+        "dc000009"
       ]
     ],
     "type": "template",
@@ -115,13 +115,13 @@
     "fieldType": "msg",
     "format": "html",
     "syntax": "plain",
-    "template": "<!DOCTYPE html>\n<html lang=\"ja\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n<title>M5StickC ダミー</title>\n<style>\n  body { font-family:\"Meiryo\",sans-serif; background:#eee; margin:0; padding:16px; }\n  .wrap { max-width:760px; margin:0 auto; display:grid; grid-template-columns: 260px 1fr; gap:20px; }\n  .m5 { background:#e8590c; border-radius:14px; padding:16px; }\n  .lcd { background:#000; color:#fff; font-family:monospace; font-size:15px; line-height:1.5; height:150px; padding:8px; white-space:pre-wrap; overflow:hidden; border-radius:4px; }\n  .lcd.alert { background:#a00; } .lcd.warn { background:#960; } .lcd.ok { color:#6f6; }\n  .m5 .btns { display:flex; gap:8px; margin-top:10px; } .m5 button { flex:1; padding:10px; font-weight:bold; }\n  .panel { background:#fff; padding:12px; border:1px solid #bbb; }\n  .panel h3 { margin:0 0 6px; } input { width:100%; padding:8px; font:inherit; box-sizing:border-box; }\n  .qr { display:flex; flex-wrap:wrap; gap:6px; margin:6px 0 14px; } .qr button { padding:4px 8px; font-size:12px; }\n  .note { font-size:12px; color:#555; }\n</style>\n</head>\n<body>\n<h2 style=\"text-align:center\">M5StickC ダミー（QR出庫フロー）</h2>\n<div class=\"wrap\">\n  <div class=\"m5\">\n    <div class=\"lcd\" id=\"lcd\"></div>\n    <div class=\"btns\"><button id=\"btnA\">A: 決定</button><button id=\"btnB\">B: 取消</button></div>\n  </div>\n  <div class=\"panel\">\n    <h3>QR読み取り（文字列を入力して Enter）</h3>\n    <input id=\"scan\" placeholder=\"例: 社員名,山田太郎\" autofocus>\n    <p class=\"note\">順序: 社員 → 部署 → 部品 → 個数 → A:決定 / B:取消。QRの中身は「項目名,値」（社員名 / 部署名 / 品番 / 個数）。下のボタンで入力欄にQR文字列を入れて Enter。</p>\n    <h3>社員QR</h3><div class=\"qr\" id=\"qr-user\"></div>\n    <h3>部署QR</h3><div class=\"qr\" id=\"qr-dept\"></div>\n    <h3>部品QR</h3><div class=\"qr\" id=\"qr-item\"></div>\n    <h3>個数QR</h3><div class=\"qr\" id=\"qr-qty\"></div>\n    <p class=\"note\">※ 出庫は <code>POST /api/checkout</code> を直接呼びます。発注点以下の通知は、実機が <code>degimono/alert</code>（MQTT）で受けるものと同じ文を WebSocket（<code>/ws/alert</code>）で受けて表示します。<span id=\"ws-state\"></span></p>\n  </div>\n</div>\n<script>\nlet step = 'USER', data = {}, msg = '', cls = '';\nconst lcd = document.getElementById('lcd'), scan = document.getElementById('scan');\nconst PROMPT = { USER:'社員証をスキャン', DEPT:()=>`${data.name}さん\\n部署QRをスキャン`,\n  ITEM:()=>`部署: ${data.dept}\\n部品QRをスキャン`, QTY:()=>`部品: ${data.part}\\n個数QRをスキャン`,\n  CONFIRM:()=>`人: ${data.name}\\n部: ${data.dept}\\n品: ${data.part} x ${data.qty}\\nA: 決定 / B: 取消` };\n\nfunction draw() {\n  const p = PROMPT[step]; const text = typeof p === 'function' ? p() : p;\n  lcd.textContent = (msg ? msg + '\\n\\n' : '') + (msg ? '' : text);\n  lcd.className = 'lcd ' + cls;\n}\nfunction beep(freq = 880, ms = 200) {\n  try { const c = new (window.AudioContext || window.webkitAudioContext)(), o = c.createOscillator();\n    o.frequency.value = freq; o.connect(c.destination); o.start(); setTimeout(() => { o.stop(); c.close(); }, ms); } catch (e) {}\n}\nlet clearTimer = null;\nfunction reset(message, c, ms = 4000) { step = 'USER'; data = {}; msg = message || ''; cls = c || ''; draw();\n  clearTimeout(clearTimer);\n  if (msg) clearTimer = setTimeout(() => { msg = ''; cls = ''; draw(); }, ms); }\n\n// 発注点以下の通知（実機の degimono/alert と同じ中身）を WebSocket で受ける。\n// つながらないとき（Flask 版など）は、出庫の応答の alert で代わりに表示する\nlet wsOk = false;\nfunction connectAlert() {\n  let ws;\n  try { ws = new WebSocket((location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws/alert'); }\n  catch (e) { return; }\n  const state = document.getElementById('ws-state');\n  ws.onopen = () => { wsOk = true; state.textContent = '（通知: 接続中）'; };\n  ws.onclose = () => { wsOk = false; state.textContent = '（通知: 未接続）'; setTimeout(connectAlert, 3000); };\n  ws.onmessage = e => {\n    let a; try { a = JSON.parse(e.data); } catch (err) { return; }\n    beep(1200, 600);\n    reset(a.text, a.ordered ? 'warn' : 'alert', 8000);  // 発注済みなら黄土色、未発注なら赤\n  };\n}\n\n// QRの中身は「項目名,値」（例: 社員名,山田太郎）。項目名で何のQRかを判定する\nconst LABEL_TO_STEP = { '社員名':'USER', '部署名':'DEPT', '品番':'ITEM', '個数':'QTY' };\n\nfunction onScan(text) {\n  const [label, ...rest] = text.trim().split(',');\n  const kind = LABEL_TO_STEP[label.trim()];\n  const expect = step;\n  if (kind !== expect) { beep(300, 300); msg = 'ピピッ! 順序が違います\\n(' + ({USER:'社員',DEPT:'部署',ITEM:'部品',QTY:'個数'}[expect] || '') + 'QRを読んでください)'; cls = ''; draw();\n    setTimeout(() => { msg = ''; draw(); }, 1500); return; }\n  msg = ''; cls = '';\n  if (kind === 'USER') { data.name = rest[0]; step = 'DEPT'; }\n  else if (kind === 'DEPT') { data.dept = rest[0]; step = 'ITEM'; }\n  else if (kind === 'ITEM') { data.part = rest[0]; step = 'QTY'; }\n  else if (kind === 'QTY') { data.qty = Number(rest[0]); step = 'CONFIRM'; }\n  draw();\n}\nasync function decide() {\n  if (step !== 'CONFIRM') return;\n  try {\n    const res = await fetch('/api/checkout', { method:'POST', headers:{'Content-Type':'application/json'},\n      body: JSON.stringify({ user_name: data.name, department: data.dept, part_id: data.part, quantity: data.qty }) });\n    const r = await res.json();\n    if (r.status !== 'ok') { beep(300, 400); return reset('エラー\\n' + r.message, 'alert'); }\n    let t = '登録完了\\n' + r.part_name + '\\n在庫: ' + r.stock;\n    // 通知は WebSocket で届くので、ここでは上書きしない（応答と通知のどちらが先に届くかは決まっていない）\n    if (r.alert && wsOk) { step = 'USER'; data = {}; if (!msg) draw(); return; }\n    if (r.alert) { beep(1200, 600); t += '\\n!! ' + r.alert_message; return reset(t, 'alert'); }\n    reset(t, 'ok');\n  } catch (e) { beep(300, 400); reset('通信エラー', 'alert'); }\n}\ndocument.getElementById('btnA').onclick = decide;\ndocument.getElementById('btnB').onclick = () => { if (step !== 'USER') reset('取消しました'); };\nscan.onkeydown = e => { if (e.key === 'Enter' && scan.value.trim()) { onScan(scan.value); scan.value = ''; } };\n\nfunction addButtons(id, items) {\n  const box = document.getElementById(id);\n  items.forEach(([label, text]) => { const b = document.createElement('button'); b.textContent = label;\n    b.onclick = () => { scan.value = text; scan.focus(); }; box.appendChild(b); });\n}\n(async () => {\n  const emp = await (await fetch('/api/employees')).json();\n  addButtons('qr-user', emp.employees.map(e => [e.name, '社員名,' + e.name]));\n  addButtons('qr-dept', emp.departments.map(d => [d, '部署名,' + d]));\n  const parts = await (await fetch('/api/parts')).json();\n  addButtons('qr-item', parts.map(p => [p.id + ' ' + p.name, '品番,' + p.id]));\n  addButtons('qr-qty', [1, 2, 3, 5, 10].map(n => [n + '個', '個数,' + n]));\n  draw();\n})();\nconnectAlert();\n</script>\n</body>\n</html>\n",
+    "template": "<!DOCTYPE html>\n<html lang=\"ja\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n<title>M5StickC ダミー</title>\n<style>\n  body { font-family:\"Meiryo\",sans-serif; background:#eee; margin:0; padding:16px; }\n  .wrap { max-width:760px; margin:0 auto; display:grid; grid-template-columns: 260px 1fr; gap:20px; }\n  .m5 { background:#e8590c; border-radius:14px; padding:16px; }\n  .lcd { background:#000; color:#fff; font-family:monospace; font-size:15px; line-height:1.5; height:150px; padding:8px; white-space:pre-wrap; overflow:hidden; border-radius:4px; }\n  .lcd.alert { background:#a00; } .lcd.warn { background:#960; } .lcd.ok { color:#6f6; }\n  .m5 .btns { display:flex; gap:8px; margin-top:10px; } .m5 button { flex:1; padding:10px; font-weight:bold; }\n  .panel { background:#fff; padding:12px; border:1px solid #bbb; }\n  .panel h3 { margin:0 0 6px; } input { width:100%; padding:8px; font:inherit; box-sizing:border-box; }\n  .qr { display:flex; flex-wrap:wrap; gap:6px; margin:6px 0 14px; } .qr button { padding:4px 8px; font-size:12px; }\n  .note { font-size:12px; color:#555; }\n</style>\n</head>\n<body>\n<h2 style=\"text-align:center\">M5StickC ダミー（QR出庫フロー）</h2>\n<div class=\"wrap\">\n  <div class=\"m5\">\n    <div class=\"lcd\" id=\"lcd\"></div>\n    <div class=\"btns\"><button id=\"btnA\">A: 決定</button><button id=\"btnB\">B: 取消</button></div>\n  </div>\n  <div class=\"panel\">\n    <h3>QR読み取り（文字列を入力して Enter）</h3>\n    <input id=\"scan\" placeholder=\"例: 社員名,山田太郎\" autofocus>\n    <p class=\"note\">順序: 社員 → 部署 → 部品 → 個数 → A:決定 / B:取消。QRの中身は「項目名,値」（社員名 / 部署名 / 品番 / 個数）。下のボタンで入力欄にQR文字列を入れて Enter。</p>\n    <h3>社員QR</h3><div class=\"qr\" id=\"qr-user\"></div>\n    <h3>部署QR</h3><div class=\"qr\" id=\"qr-dept\"></div>\n    <h3>部品QR</h3><div class=\"qr\" id=\"qr-item\"></div>\n    <h3>個数QR</h3><div class=\"qr\" id=\"qr-qty\"></div>\n    <p class=\"note\">※ 出庫は <code>POST /api/checkout</code> を直接呼びます。発注点以下の通知は、実機が <code>degimono/alert</code>（MQTT）で受けるものと同じ文を WebSocket（<code>/ws/alert</code>）で受けて表示します。<span id=\"ws-state\"></span></p>\n  </div>\n</div>\n<script>\nlet step = 'USER', data = {}, msg = '', cls = '';\nconst lcd = document.getElementById('lcd'), scan = document.getElementById('scan');\nconst PROMPT = { USER:'社員証をスキャン', DEPT:()=>`${data.name}さん\\n部署QRをスキャン`,\n  ITEM:()=>`部署: ${data.dept}\\n部品QRをスキャン`, QTY:()=>`部品: ${data.part}\\n個数QRをスキャン`,\n  CONFIRM:()=>`人: ${data.name}\\n部: ${data.dept}\\n品: ${data.part} x ${data.qty}\\nA: 決定 / B: 取消` };\n\nfunction draw() {\n  const p = PROMPT[step]; const text = typeof p === 'function' ? p() : p;\n  lcd.textContent = (msg ? msg + '\\n\\n' : '') + (msg ? '' : text);\n  lcd.className = 'lcd ' + cls;\n}\nfunction beep(freq = 880, ms = 200) {\n  try { const c = new (window.AudioContext || window.webkitAudioContext)(), o = c.createOscillator();\n    o.frequency.value = freq; o.connect(c.destination); o.start(); setTimeout(() => { o.stop(); c.close(); }, ms); } catch (e) {}\n}\nlet clearTimer = null;\nfunction reset(message, c, ms = 4000) { step = 'USER'; data = {}; msg = message || ''; cls = c || ''; draw();\n  clearTimeout(clearTimer);\n  if (msg) clearTimer = setTimeout(() => { msg = ''; cls = ''; draw(); }, ms); }\n\n// 発注点以下の通知（実機の degimono/alert と同じ中身）を WebSocket で受ける。\n// つながらないときは、出庫の応答の alert で代わりに表示する\nlet wsOk = false;\nfunction connectAlert() {\n  let ws;\n  try { ws = new WebSocket((location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws/alert'); }\n  catch (e) { return; }\n  const state = document.getElementById('ws-state');\n  ws.onopen = () => { wsOk = true; state.textContent = '（通知: 接続中）'; };\n  ws.onclose = () => { wsOk = false; state.textContent = '（通知: 未接続）'; setTimeout(connectAlert, 3000); };\n  ws.onmessage = e => {\n    let a; try { a = JSON.parse(e.data); } catch (err) { return; }\n    beep(1200, 600);\n    reset(a.text, a.ordered ? 'warn' : 'alert', 8000);  // 発注済みなら黄土色、未発注なら赤\n  };\n}\n\n// QRの中身は「項目名,値」（例: 社員名,山田太郎）。項目名で何のQRかを判定する\nconst LABEL_TO_STEP = { '社員名':'USER', '部署名':'DEPT', '品番':'ITEM', '個数':'QTY' };\n\nfunction onScan(text) {\n  const [label, ...rest] = text.trim().split(',');\n  const kind = LABEL_TO_STEP[label.trim()];\n  const expect = step;\n  if (kind !== expect) { beep(300, 300); msg = 'ピピッ! 順序が違います\\n(' + ({USER:'社員',DEPT:'部署',ITEM:'部品',QTY:'個数'}[expect] || '') + 'QRを読んでください)'; cls = ''; draw();\n    setTimeout(() => { msg = ''; draw(); }, 1500); return; }\n  msg = ''; cls = '';\n  if (kind === 'USER') { data.name = rest[0]; step = 'DEPT'; }\n  else if (kind === 'DEPT') { data.dept = rest[0]; step = 'ITEM'; }\n  else if (kind === 'ITEM') { data.part = rest[0]; step = 'QTY'; }\n  else if (kind === 'QTY') { data.qty = Number(rest[0]); step = 'CONFIRM'; }\n  draw();\n}\nasync function decide() {\n  if (step !== 'CONFIRM') return;\n  try {\n    const res = await fetch('/api/checkout', { method:'POST', headers:{'Content-Type':'application/json'},\n      body: JSON.stringify({ user_name: data.name, department: data.dept, part_id: data.part, quantity: data.qty }) });\n    const r = await res.json();\n    if (r.status !== 'ok') { beep(300, 400); return reset('エラー\\n' + r.message, 'alert'); }\n    let t = '登録完了\\n' + r.part_name + '\\n在庫: ' + r.stock;\n    // 通知は WebSocket で届くので、ここでは上書きしない（応答と通知のどちらが先に届くかは決まっていない）\n    if (r.alert && wsOk) { step = 'USER'; data = {}; if (!msg) draw(); return; }\n    if (r.alert) { beep(1200, 600); t += '\\n!! ' + r.alert_message; return reset(t, 'alert'); }\n    reset(t, 'ok');\n  } catch (e) { beep(300, 400); reset('通信エラー', 'alert'); }\n}\ndocument.getElementById('btnA').onclick = decide;\ndocument.getElementById('btnB').onclick = () => { if (step !== 'USER') reset('取消しました'); };\nscan.onkeydown = e => { if (e.key === 'Enter' && scan.value.trim()) { onScan(scan.value); scan.value = ''; } };\n\nfunction addButtons(id, items) {\n  const box = document.getElementById(id);\n  items.forEach(([label, text]) => { const b = document.createElement('button'); b.textContent = label;\n    b.onclick = () => { scan.value = text; scan.focus(); }; box.appendChild(b); });\n}\n(async () => {\n  const emp = await (await fetch('/api/employees')).json();\n  addButtons('qr-user', emp.employees.map(e => [e.name, '社員名,' + e.name]));\n  addButtons('qr-dept', emp.departments.map(d => [d, '部署名,' + d]));\n  const parts = await (await fetch('/api/parts')).json();\n  addButtons('qr-item', parts.map(p => [p.id + ' ' + p.name, '品番,' + p.id]));\n  addButtons('qr-qty', [1, 2, 3, 5, 10].map(n => [n + '個', '個数,' + n]));\n  draw();\n})();\nconnectAlert();\n</script>\n</body>\n</html>\n",
     "output": "str"
   },
   {
-    "id": "dg00000a",
-    "z": "dg000002",
-    "x": 540,
+    "id": "dc000009",
+    "z": "dc000001",
+    "x": 500,
     "y": 220,
     "wires": [],
     "type": "http response",
@@ -132,30 +132,202 @@
     }
   },
   {
-    "id": "dg00000b",
+    "id": "dc00000a",
     "type": "tab",
-    "label": "DB準備",
+    "label": "共通処理（完成品）",
     "disabled": false,
-    "info": "起動時にテーブルを作り、部品が0件ならデモデータを入れる。"
+    "info": "ほかのタブから link call で呼ぶ処理。どれも msg.db（データを読むで出したもの）を使う。"
   },
   {
-    "id": "dg00000c",
-    "z": "dg00000b",
-    "x": 140,
+    "id": "dc00000b",
+    "z": "dc00000a",
+    "x": 120,
     "y": 40,
     "wires": [],
     "type": "comment",
-    "name": "起動時: テーブル作成 → 部品が0件ならデモデータ投入",
+    "name": "部品に状態を付ける: msg.payload（部品1件か配列）に below_point, waiting_order, state を足す",
     "info": ""
   },
   {
-    "id": "dg00000d",
-    "z": "dg00000b",
-    "x": 140,
+    "id": "dc00000c",
+    "z": "dc00000a",
+    "x": 120,
     "y": 100,
     "wires": [
       [
-        "dg00000e"
+        "dc00000d"
+      ]
+    ],
+    "type": "link in",
+    "name": "部品に状態を付ける",
+    "links": []
+  },
+  {
+    "id": "dc00000d",
+    "z": "dc00000a",
+    "x": 310,
+    "y": 100,
+    "wires": [
+      [
+        "dc00000e"
+      ]
+    ],
+    "type": "function",
+    "name": "状態を付ける",
+    "func": "const db = msg.db;\nfunction view(p) {\n    const waiting = db.orders.filter(o => o.part_id === p.id && o.status === \"入荷待ち\")\n        .sort((a, b) => a.id - b.id)[0];\n    const below = p.stock <= p.reorder_point;\n    return {\n        ...p,\n        below_point: below,\n        waiting_order: waiting ? {\n            id: waiting.id, part_id: waiting.part_id, quantity: waiting.quantity, orderer_id: waiting.orderer_id,\n            ordered_date: waiting.ordered_date, expected_date: waiting.expected_date, status: waiting.status,\n        } : null,\n        state: waiting ? \"入荷待ち\" : (below ? \"要発注\" : \"発注不要\"),\n    };\n}\nmsg.payload = Array.isArray(msg.payload) ? msg.payload.map(view) : view(msg.payload);\nreturn msg;",
+    "outputs": 1,
+    "timeout": 0,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": []
+  },
+  {
+    "id": "dc00000e",
+    "z": "dc00000a",
+    "x": 500,
+    "y": 100,
+    "wires": [],
+    "type": "link out",
+    "name": "呼び出し元へ戻す",
+    "mode": "return",
+    "links": []
+  },
+  {
+    "id": "dc00000f",
+    "z": "dc00000a",
+    "x": 120,
+    "y": 180,
+    "wires": [],
+    "type": "comment",
+    "name": "履歴に残す: msg.history（kind, part_id, quantity, employee_id, note, department, date）を履歴に足す",
+    "info": "作業者名と部署は従業員から引く。従業員がいなければ残さない。\n日時は今。date（YYYY-MM-DD）があれば、その日付に今の時刻を付ける。"
+  },
+  {
+    "id": "dc000010",
+    "z": "dc00000a",
+    "x": 120,
+    "y": 240,
+    "wires": [
+      [
+        "dc000011"
+      ]
+    ],
+    "type": "link in",
+    "name": "履歴に残す",
+    "links": []
+  },
+  {
+    "id": "dc000011",
+    "z": "dc00000a",
+    "x": 310,
+    "y": 240,
+    "wires": [
+      [
+        "dc000012"
+      ]
+    ],
+    "type": "function",
+    "name": "履歴に足す",
+    "func": "const db = msg.db;\nconst h = msg.history;\nconst e = db.employees.find(e => e.id === h.employee_id);\nif (!e) return msg;\n\nconst d = new Date();\nconst p = n => String(n).padStart(2, \"0\");\nconst date = h.date || d.getFullYear() + \"-\" + p(d.getMonth() + 1) + \"-\" + p(d.getDate());\n\ndb.history.push({\n    id: ++db.seq.history, ts: date + \" \" + p(d.getHours()) + \":\" + p(d.getMinutes()),\n    kind: h.kind, part_id: h.part_id, quantity: h.quantity,\n    worker_id: e.id, worker_name: e.name, department: h.department || e.department, note: h.note || \"\",\n});\nreturn msg;",
+    "outputs": 1,
+    "timeout": 0,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": []
+  },
+  {
+    "id": "dc000012",
+    "z": "dc00000a",
+    "x": 500,
+    "y": 240,
+    "wires": [],
+    "type": "link out",
+    "name": "呼び出し元へ戻す",
+    "mode": "return",
+    "links": []
+  },
+  {
+    "id": "dc000013",
+    "z": "dc00000a",
+    "x": 120,
+    "y": 320,
+    "wires": [],
+    "type": "comment",
+    "name": "履歴一覧を作る: 履歴を新しい順に並べ、品名を付けて msg.payload に入れる",
+    "info": ""
+  },
+  {
+    "id": "dc000014",
+    "z": "dc00000a",
+    "x": 120,
+    "y": 380,
+    "wires": [
+      [
+        "dc000015"
+      ]
+    ],
+    "type": "link in",
+    "name": "履歴一覧を作る",
+    "links": []
+  },
+  {
+    "id": "dc000015",
+    "z": "dc00000a",
+    "x": 310,
+    "y": 380,
+    "wires": [
+      [
+        "dc000016"
+      ]
+    ],
+    "type": "function",
+    "name": "新しい順に品名を付ける",
+    "func": "const db = msg.db;\nmsg.payload = db.history\n    .slice().sort((a, b) => b.ts.localeCompare(a.ts) || b.id - a.id)\n    .map(h => {\n        const p = db.parts.find(p => p.id === h.part_id);\n        return { ...h, part_name: p ? p.name : null };\n    });\nreturn msg;",
+    "outputs": 1,
+    "timeout": 0,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": []
+  },
+  {
+    "id": "dc000016",
+    "z": "dc00000a",
+    "x": 500,
+    "y": 380,
+    "wires": [],
+    "type": "link out",
+    "name": "呼び出し元へ戻す",
+    "mode": "return",
+    "links": []
+  },
+  {
+    "id": "dc000017",
+    "type": "tab",
+    "label": "データ準備（完成品）",
+    "disabled": false,
+    "info": "起動時にデータがなければデモデータを入れる。「デモデータに戻す」で全部消して入れ直す。"
+  },
+  {
+    "id": "dc000018",
+    "z": "dc000017",
+    "x": 120,
+    "y": 40,
+    "wires": [],
+    "type": "comment",
+    "name": "データはグローバルコンテキストの \"degimono\"（サイドバーの「コンテキストデータ」で見られる）",
+    "info": ""
+  },
+  {
+    "id": "dc000019",
+    "z": "dc000017",
+    "x": 120,
+    "y": 100,
+    "wires": [
+      [
+        "dc00001a"
       ]
     ],
     "type": "inject",
@@ -174,18 +346,74 @@
     "payloadType": "date"
   },
   {
-    "id": "dg00000e",
-    "z": "dg00000b",
-    "x": 340,
+    "id": "dc00001a",
+    "z": "dc000017",
+    "x": 310,
     "y": 100,
     "wires": [
       [
-        "dg00000f"
+        "dc00001b"
+      ]
+    ],
+    "type": "change",
+    "name": "データを読む",
+    "rules": [
+      {
+        "t": "set",
+        "p": "db",
+        "pt": "msg",
+        "to": "degimono",
+        "tot": "global"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false
+  },
+  {
+    "id": "dc00001b",
+    "z": "dc000017",
+    "x": 500,
+    "y": 100,
+    "wires": [
+      [
+        "dc00001c"
+      ],
+      [
+        "dc000020"
+      ]
+    ],
+    "type": "switch",
+    "name": "データはある？",
+    "property": "db",
+    "propertyType": "msg",
+    "rules": [
+      {
+        "t": "null"
+      },
+      {
+        "t": "else"
+      }
+    ],
+    "checkall": "false",
+    "repair": false,
+    "outputs": 2
+  },
+  {
+    "id": "dc00001c",
+    "z": "dc000017",
+    "x": 690,
+    "y": 100,
+    "wires": [
+      [
+        "dc00001d"
       ]
     ],
     "type": "function",
-    "name": "テーブル作成SQL",
-    "func": "msg.topic = \"CREATE TABLE IF NOT EXISTS employees (\\n    id TEXT PRIMARY KEY,\\n    name TEXT NOT NULL,\\n    kana TEXT NOT NULL,\\n    department TEXT NOT NULL\\n);\\nCREATE TABLE IF NOT EXISTS parts (\\n    id TEXT PRIMARY KEY,\\n    name TEXT NOT NULL,\\n    location TEXT NOT NULL,\\n    stock INTEGER NOT NULL DEFAULT 0,\\n    reorder_point INTEGER NOT NULL DEFAULT 0,\\n    departments TEXT NOT NULL DEFAULT ''\\n);\\nCREATE TABLE IF NOT EXISTS orders (\\n    id INTEGER PRIMARY KEY AUTOINCREMENT,\\n    part_id TEXT NOT NULL,\\n    quantity INTEGER NOT NULL,\\n    orderer_id TEXT NOT NULL,\\n    ordered_date TEXT NOT NULL,\\n    expected_date TEXT NOT NULL,\\n    status TEXT NOT NULL DEFAULT '入荷待ち',\\n    received_date TEXT,\\n    received_qty INTEGER,\\n    receiver_id TEXT\\n);\\nCREATE TABLE IF NOT EXISTS history (\\n    id INTEGER PRIMARY KEY AUTOINCREMENT,\\n    ts TEXT NOT NULL,\\n    kind TEXT NOT NULL,\\n    part_id TEXT NOT NULL,\\n    quantity INTEGER NOT NULL,\\n    worker_id TEXT,\\n    worker_name TEXT,\\n    department TEXT,\\n    note TEXT DEFAULT ''\\n);\";\nreturn msg;",
+    "name": "デモデータを作る",
+    "func": "// (社員ID, 氏名, よみ, 部署)\nconst EMPLOYEES = [\n    [\"1001\", \"山田太郎\", \"やまだたろう\", \"製造部\"],\n    [\"1002\", \"相田健司\", \"あいだけんじ\", \"製造部\"],\n    [\"1003\", \"佐々木徹\", \"ささきとおる\", \"製造部\"],\n    [\"1004\", \"田中次郎\", \"たなかじろう\", \"製造部\"],\n    [\"1005\", \"渡辺健一\", \"わたなべけんいち\", \"製造部\"],\n    [\"2001\", \"木村拓哉\", \"きむらたくや\", \"開発部\"],\n    [\"2002\", \"佐藤花子\", \"さとうはなこ\", \"開発部\"],\n    [\"2003\", \"高橋涼介\", \"たかはしりょうすけ\", \"開発部\"],\n    [\"2004\", \"本田翼\", \"ほんだつばさ\", \"開発部\"],\n    [\"3001\", \"鈴木一郎\", \"すずきいちろう\", \"資材課\"],\n    [\"3002\", \"斉藤和夫\", \"さいとうかずお\", \"資材課\"],\n    [\"3003\", \"中村誠\", \"なかむらまこと\", \"資材課\"],\n    [\"4001\", \"伊藤美咲\", \"いとうみさき\", \"品質管理部\"],\n    [\"4002\", \"加藤進\", \"かとうすすむ\", \"品質管理部\"],\n    [\"4003\", \"吉田裕子\", \"よしだゆうこ\", \"品質管理部\"],\n    [\"5001\", \"小林正雄\", \"こばやしまさお\", \"設備保全課\"],\n    [\"5002\", \"松本大樹\", \"まつもとだいき\", \"設備保全課\"],\n];\n// (品番, 品名, 保管場所, 在庫, 発注点, 使用部署)\nconst PARTS = [\n    [\"AB-1234\", \"近接センサー\", \"A\", 2, 2, \"製造部、設備保全課\"],\n    [\"CD-2040\", \"リレー\", \"B\", 1, 3, \"製造部、開発部\"],\n    [\"EF-3050\", \"ヒューズ\", \"C\", 0, 5, \"設備保全課\"],\n    [\"GH-4060\", \"ベアリング\", \"D\", 8, 3, \"製造部、設備保全課\"],\n    [\"JK-5070\", \"エア継手\", \"E\", 6, 4, \"製造部\"],\n    [\"LM-6080\", \"押しボタン\", \"F\", 4, 2, \"開発部、品質管理部\"],\n];\n// 入荷待ちのデモ: (品番, 数量, 発注者ID, 発注日, 入荷予定日)\nconst ORDERS = [\n    [\"GH-4060\", 5, \"3001\", \"2026-10-10\", \"2026-10-16\"],\n    [\"JK-5070\", 20, \"3001\", \"2026-10-12\", \"2026-10-18\"],\n    [\"LM-6080\", 3, \"3002\", \"2026-10-14\", \"2026-10-21\"],\n];\n\nconst db = {\n    employees: EMPLOYEES.map(([id, name, kana, department]) => ({ id, name, kana, department })),\n    parts: PARTS.map(([id, name, location, stock, reorder_point, departments]) =>\n        ({ id, name, location, stock, reorder_point, departments })),\n    orders: [],\n    history: [],\n    seq: { order: 0, history: 0 },\n};\n// 発注と、その発注の履歴\nfor (const [part_id, quantity, orderer_id, ordered_date, expected_date] of ORDERS) {\n    db.orders.push({\n        id: ++db.seq.order, part_id, quantity, orderer_id, ordered_date, expected_date,\n        status: \"入荷待ち\", received_date: null, received_qty: null, receiver_id: null,\n    });\n    const e = db.employees.find(e => e.id === orderer_id);\n    db.history.push({\n        id: ++db.seq.history, ts: ordered_date + \" 10:00\", kind: \"発注\", part_id, quantity,\n        worker_id: e.id, worker_name: e.name, department: e.department, note: \"入荷予定日 \" + expected_date,\n    });\n}\nmsg.db = db;\nreturn msg;",
     "outputs": 1,
     "timeout": 0,
     "noerr": 0,
@@ -194,121 +422,67 @@
     "libs": []
   },
   {
-    "id": "dg00000f",
-    "z": "dg00000b",
-    "x": 540,
+    "id": "dc00001d",
+    "z": "dc000017",
+    "x": 880,
     "y": 100,
     "wires": [
       [
-        "dg000010"
+        "dc00001e"
       ]
     ],
-    "type": "sqlite",
-    "mydb": "dg000001",
-    "sqlquery": "batch",
-    "sql": "",
-    "name": "テーブル作成"
+    "type": "change",
+    "name": "保存する",
+    "rules": [
+      {
+        "t": "set",
+        "p": "degimono",
+        "pt": "global",
+        "to": "db",
+        "tot": "msg"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false
   },
   {
-    "id": "dg000010",
-    "z": "dg00000b",
-    "x": 740,
+    "id": "dc00001e",
+    "z": "dc000017",
+    "x": 1070,
     "y": 100,
     "wires": [
       [
-        "dg000011"
+        "dc00001f"
       ]
     ],
-    "type": "function",
-    "name": "件数を数える",
-    "func": "msg.params = {};\nreturn msg;",
-    "outputs": 1,
-    "timeout": 0,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": []
-  },
-  {
-    "id": "dg000011",
-    "z": "dg00000b",
-    "x": 940,
-    "y": 100,
-    "wires": [
-      [
-        "dg000012"
-      ]
-    ],
-    "type": "sqlite",
-    "mydb": "dg000001",
-    "sqlquery": "prepared",
-    "sql": "SELECT COUNT(*) AS n FROM parts",
-    "name": "部品の件数"
-  },
-  {
-    "id": "dg000012",
-    "z": "dg00000b",
-    "x": 1140,
-    "y": 100,
-    "wires": [
-      [
-        "dg000013"
-      ]
-    ],
-    "type": "function",
-    "name": "デモデータSQL",
-    "func": "// (社員ID, 氏名, よみ, 部署)\nconst EMPLOYEES = [\n    [\"1001\", \"山田太郎\", \"やまだたろう\", \"製造部\"],\n    [\"1002\", \"相田健司\", \"あいだけんじ\", \"製造部\"],\n    [\"1003\", \"佐々木徹\", \"ささきとおる\", \"製造部\"],\n    [\"1004\", \"田中次郎\", \"たなかじろう\", \"製造部\"],\n    [\"1005\", \"渡辺健一\", \"わたなべけんいち\", \"製造部\"],\n    [\"2001\", \"木村拓哉\", \"きむらたくや\", \"開発部\"],\n    [\"2002\", \"佐藤花子\", \"さとうはなこ\", \"開発部\"],\n    [\"2003\", \"高橋涼介\", \"たかはしりょうすけ\", \"開発部\"],\n    [\"2004\", \"本田翼\", \"ほんだつばさ\", \"開発部\"],\n    [\"3001\", \"鈴木一郎\", \"すずきいちろう\", \"資材課\"],\n    [\"3002\", \"斉藤和夫\", \"さいとうかずお\", \"資材課\"],\n    [\"3003\", \"中村誠\", \"なかむらまこと\", \"資材課\"],\n    [\"4001\", \"伊藤美咲\", \"いとうみさき\", \"品質管理部\"],\n    [\"4002\", \"加藤進\", \"かとうすすむ\", \"品質管理部\"],\n    [\"4003\", \"吉田裕子\", \"よしだゆうこ\", \"品質管理部\"],\n    [\"5001\", \"小林正雄\", \"こばやしまさお\", \"設備保全課\"],\n    [\"5002\", \"松本大樹\", \"まつもとだいき\", \"設備保全課\"],\n];\n// (品番, 品名, 保管場所, 在庫, 発注点, 使用部署)\nconst PARTS = [\n    [\"AB-1234\", \"近接センサー\", \"A\", 2, 2, \"製造部、設備保全課\"],\n    [\"CD-2040\", \"リレー\", \"B\", 1, 3, \"製造部、開発部\"],\n    [\"EF-3050\", \"ヒューズ\", \"C\", 0, 5, \"設備保全課\"],\n    [\"GH-4060\", \"ベアリング\", \"D\", 8, 3, \"製造部、設備保全課\"],\n    [\"JK-5070\", \"エア継手\", \"E\", 6, 4, \"製造部\"],\n    [\"LM-6080\", \"押しボタン\", \"F\", 4, 2, \"開発部、品質管理部\"],\n];\n// 入荷待ちのデモ: (品番, 数量, 発注者ID, 発注日, 入荷予定日)\nconst ORDERS = [\n    [\"GH-4060\", 5, \"3001\", \"2026-10-10\", \"2026-10-16\"],\n    [\"JK-5070\", 20, \"3001\", \"2026-10-12\", \"2026-10-18\"],\n    [\"LM-6080\", 3, \"3002\", \"2026-10-14\", \"2026-10-21\"],\n];\nconst q = v => typeof v === \"number\" ? v : \"'\" + String(v).replace(/'/g, \"''\") + \"'\";\nconst row = r => \"(\" + r.map(q).join(\",\") + \")\";\n\nlet s = \"INSERT OR IGNORE INTO employees VALUES \" + EMPLOYEES.map(row).join(\",\") + \";\\n\";\nif (msg.payload[0].n === 0) {\n    s += \"INSERT INTO parts VALUES \" + PARTS.map(row).join(\",\") + \";\\n\";\n    for (const [part, qty, emp, od, ed] of ORDERS) {\n        s += \"INSERT INTO orders (part_id, quantity, orderer_id, ordered_date, expected_date) VALUES \"\n            + row([part, qty, emp, od, ed]) + \";\\n\";\n        s += \"INSERT INTO history (ts, kind, part_id, quantity, worker_id, worker_name, department, note) \"\n            + \"SELECT \" + q(od + \" 10:00\") + \", '発注', \" + q(part) + \", \" + qty + \", id, name, department, \"\n            + q(\"入荷予定日 \" + ed) + \" FROM employees WHERE id = \" + q(emp) + \";\\n\";\n    }\n}\nmsg.topic = s;\nreturn msg;",
-    "outputs": 1,
-    "timeout": 0,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": []
-  },
-  {
-    "id": "dg000013",
-    "z": "dg00000b",
-    "x": 1340,
-    "y": 100,
-    "wires": [
-      [
-        "dg000014"
-      ]
-    ],
-    "type": "sqlite",
-    "mydb": "dg000001",
-    "sqlquery": "batch",
-    "sql": "",
-    "name": "デモデータ投入"
-  },
-  {
-    "id": "dg000014",
-    "z": "dg00000b",
-    "x": 1540,
-    "y": 100,
-    "wires": [
-      [
-        "dg000015"
-      ]
-    ],
-    "type": "function",
+    "type": "change",
     "name": "完了",
-    "func": "msg.payload = \"DB準備完了\";\nreturn msg;",
-    "outputs": 1,
-    "timeout": 0,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": []
+    "rules": [
+      {
+        "t": "set",
+        "p": "payload",
+        "pt": "msg",
+        "to": "デモデータを入れました",
+        "tot": "str"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false
   },
   {
-    "id": "dg000015",
-    "z": "dg00000b",
-    "x": 1740,
+    "id": "dc00001f",
+    "z": "dc000017",
+    "x": 1260,
     "y": 100,
     "wires": [],
     "type": "debug",
-    "name": "DB準備",
+    "name": "データ準備",
     "active": true,
     "tosidebar": true,
     "console": false,
@@ -319,16 +493,68 @@
     "statusType": "auto"
   },
   {
-    "id": "dg000016",
+    "id": "dc000020",
+    "z": "dc000017",
+    "x": 690,
+    "y": 160,
+    "wires": [
+      [
+        "dc00001f"
+      ]
+    ],
+    "type": "change",
+    "name": "そのまま使う",
+    "rules": [
+      {
+        "t": "set",
+        "p": "payload",
+        "pt": "msg",
+        "to": "データあり（そのまま使う）",
+        "tot": "str"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false
+  },
+  {
+    "id": "dc000021",
+    "z": "dc000017",
+    "x": 120,
+    "y": 220,
+    "wires": [
+      [
+        "dc00001c"
+      ]
+    ],
+    "type": "inject",
+    "name": "デモデータに戻す",
+    "props": [
+      {
+        "p": "payload"
+      }
+    ],
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": "0.5",
+    "topic": "",
+    "payload": "",
+    "payloadType": "date"
+  },
+  {
+    "id": "dc000022",
     "type": "tab",
-    "label": "参照API",
+    "label": "参照API（完成品）",
     "disabled": false,
     "info": "画面が一覧や詳細を取りに来る GET の API。"
   },
   {
-    "id": "dg000017",
-    "z": "dg000016",
-    "x": 140,
+    "id": "dc000023",
+    "z": "dc000022",
+    "x": 120,
     "y": 40,
     "wires": [],
     "type": "comment",
@@ -336,13 +562,13 @@
     "info": ""
   },
   {
-    "id": "dg000018",
-    "z": "dg000016",
-    "x": 140,
+    "id": "dc000024",
+    "z": "dc000022",
+    "x": 120,
     "y": 100,
     "wires": [
       [
-        "dg000019"
+        "dc000025"
       ]
     ],
     "type": "http in",
@@ -353,18 +579,45 @@
     "swaggerDoc": ""
   },
   {
-    "id": "dg000019",
-    "z": "dg000016",
-    "x": 340,
+    "id": "dc000025",
+    "z": "dc000022",
+    "x": 310,
     "y": 100,
     "wires": [
       [
-        "dg00001a"
+        "dc000026"
+      ]
+    ],
+    "type": "change",
+    "name": "データを読む",
+    "rules": [
+      {
+        "t": "set",
+        "p": "db",
+        "pt": "msg",
+        "to": "degimono",
+        "tot": "global"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false
+  },
+  {
+    "id": "dc000026",
+    "z": "dc000022",
+    "x": 500,
+    "y": 100,
+    "wires": [
+      [
+        "dc000027"
       ]
     ],
     "type": "function",
-    "name": "条件なし",
-    "func": "msg.params = {};\nreturn msg;",
+    "name": "よみ順に並べて部署と返す",
+    "func": "const employees = msg.db.employees\n    .slice().sort((a, b) => a.kana.localeCompare(b.kana, \"ja\"))\n    .map(e => ({ id: e.id, name: e.name, department: e.department }));\nmsg.payload = { departments: [\"製造部\",\"開発部\",\"資材課\",\"品質管理部\",\"設備保全課\"], employees };\nreturn msg;",
     "outputs": 1,
     "timeout": 0,
     "noerr": 0,
@@ -373,45 +626,9 @@
     "libs": []
   },
   {
-    "id": "dg00001a",
-    "z": "dg000016",
-    "x": 540,
-    "y": 100,
-    "wires": [
-      [
-        "dg00001b"
-      ]
-    ],
-    "type": "sqlite",
-    "mydb": "dg000001",
-    "sqlquery": "prepared",
-    "sql": "SELECT id, name, department FROM employees ORDER BY kana",
-    "name": "従業員一覧"
-  },
-  {
-    "id": "dg00001b",
-    "z": "dg000016",
-    "x": 740,
-    "y": 100,
-    "wires": [
-      [
-        "dg00001c"
-      ]
-    ],
-    "type": "function",
-    "name": "部署と一緒に返す",
-    "func": "msg.payload = { departments: [\"製造部\",\"開発部\",\"資材課\",\"品質管理部\",\"設備保全課\"], employees: msg.payload };\nreturn msg;",
-    "outputs": 1,
-    "timeout": 0,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": []
-  },
-  {
-    "id": "dg00001c",
-    "z": "dg000016",
-    "x": 940,
+    "id": "dc000027",
+    "z": "dc000022",
+    "x": 690,
     "y": 100,
     "wires": [],
     "type": "http response",
@@ -420,13 +637,13 @@
     "headers": {}
   },
   {
-    "id": "dg00001d",
-    "z": "dg000016",
-    "x": 140,
+    "id": "dc000028",
+    "z": "dc000022",
+    "x": 120,
     "y": 160,
     "wires": [
       [
-        "dg00001e"
+        "dc000029"
       ]
     ],
     "type": "http in",
@@ -437,29 +654,36 @@
     "swaggerDoc": ""
   },
   {
-    "id": "dg00001e",
-    "z": "dg000016",
-    "x": 340,
+    "id": "dc000029",
+    "z": "dc000022",
+    "x": 310,
     "y": 160,
     "wires": [
       [
-        "dg00001f"
+        "dc00002a"
       ]
     ],
-    "type": "function",
+    "type": "change",
     "name": "保管場所一覧",
-    "func": "msg.payload = [\"A\",\"B\",\"C\",\"D\",\"E\",\"F\",\"部品棚\"];\nreturn msg;",
-    "outputs": 1,
-    "timeout": 0,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": []
+    "rules": [
+      {
+        "t": "set",
+        "p": "payload",
+        "pt": "msg",
+        "to": "[\"A\",\"B\",\"C\",\"D\",\"E\",\"F\",\"部品棚\"]",
+        "tot": "json"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false
   },
   {
-    "id": "dg00001f",
-    "z": "dg000016",
-    "x": 540,
+    "id": "dc00002a",
+    "z": "dc000022",
+    "x": 500,
     "y": 160,
     "wires": [],
     "type": "http response",
@@ -468,13 +692,13 @@
     "headers": {}
   },
   {
-    "id": "dg000020",
-    "z": "dg000016",
-    "x": 140,
+    "id": "dc00002b",
+    "z": "dc000022",
+    "x": 120,
     "y": 220,
     "wires": [
       [
-        "dg000021"
+        "dc00002c"
       ]
     ],
     "type": "http in",
@@ -485,18 +709,45 @@
     "swaggerDoc": ""
   },
   {
-    "id": "dg000021",
-    "z": "dg000016",
-    "x": 340,
+    "id": "dc00002c",
+    "z": "dc000022",
+    "x": 310,
     "y": 220,
     "wires": [
       [
-        "dg000022"
+        "dc00002d"
+      ]
+    ],
+    "type": "change",
+    "name": "データを読む",
+    "rules": [
+      {
+        "t": "set",
+        "p": "db",
+        "pt": "msg",
+        "to": "degimono",
+        "tot": "global"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false
+  },
+  {
+    "id": "dc00002d",
+    "z": "dc000022",
+    "x": 500,
+    "y": 220,
+    "wires": [
+      [
+        "dc00002e"
       ]
     ],
     "type": "function",
-    "name": "検索語",
-    "func": "msg.params = { $q: \"%\" + (msg.req.query.q || \"\").trim() + \"%\" };\nreturn msg;",
+    "name": "品番・品名で探す",
+    "func": "const q = (msg.req.query.q || \"\").trim().toLowerCase();\nmsg.payload = msg.db.parts\n    .filter(p => p.id.toLowerCase().includes(q) || p.name.toLowerCase().includes(q))\n    .sort((a, b) => a.id.localeCompare(b.id));\nreturn msg;",
     "outputs": 1,
     "timeout": 0,
     "noerr": 0,
@@ -505,45 +756,27 @@
     "libs": []
   },
   {
-    "id": "dg000022",
-    "z": "dg000016",
-    "x": 540,
+    "id": "dc00002e",
+    "z": "dc000022",
+    "x": 690,
     "y": 220,
     "wires": [
       [
-        "dg000023"
+        "dc00002f"
       ]
     ],
-    "type": "sqlite",
-    "mydb": "dg000001",
-    "sqlquery": "prepared",
-    "sql": "SELECT p.*, p.stock <= p.reorder_point AS below_point,\n  (SELECT json_object('id', o.id, 'part_id', o.part_id, 'quantity', o.quantity,\n     'orderer_id', o.orderer_id, 'ordered_date', o.ordered_date,\n     'expected_date', o.expected_date, 'status', o.status)\n   FROM orders o WHERE o.part_id = p.id AND o.status = '入荷待ち' ORDER BY o.id LIMIT 1) AS waiting_order\nFROM parts p\nWHERE p.id LIKE $q OR p.name LIKE $q ORDER BY p.id",
-    "name": "部品検索"
-  },
-  {
-    "id": "dg000023",
-    "z": "dg000016",
-    "x": 740,
-    "y": 220,
-    "wires": [
-      [
-        "dg000024"
-      ]
+    "type": "link call",
+    "name": "部品に状態を付ける",
+    "links": [
+      "dc00000c"
     ],
-    "type": "function",
-    "name": "形を整える",
-    "func": "msg.payload = msg.payload.map(p => {\n    p.below_point = p.below_point === 1;\n    p.waiting_order = p.waiting_order ? JSON.parse(p.waiting_order) : null;\n    p.state = p.waiting_order ? \"入荷待ち\" : (p.below_point ? \"要発注\" : \"発注不要\");\n    return p;\n});\nreturn msg;",
-    "outputs": 1,
-    "timeout": 0,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": []
+    "linkType": "static",
+    "timeout": "30"
   },
   {
-    "id": "dg000024",
-    "z": "dg000016",
-    "x": 940,
+    "id": "dc00002f",
+    "z": "dc000022",
+    "x": 880,
     "y": 220,
     "wires": [],
     "type": "http response",
@@ -552,13 +785,13 @@
     "headers": {}
   },
   {
-    "id": "dg000025",
-    "z": "dg000016",
-    "x": 140,
+    "id": "dc000030",
+    "z": "dc000022",
+    "x": 120,
     "y": 280,
     "wires": [
       [
-        "dg000026"
+        "dc000031"
       ]
     ],
     "type": "http in",
@@ -569,18 +802,45 @@
     "swaggerDoc": ""
   },
   {
-    "id": "dg000026",
-    "z": "dg000016",
-    "x": 340,
+    "id": "dc000031",
+    "z": "dc000022",
+    "x": 310,
     "y": 280,
     "wires": [
       [
-        "dg000027"
+        "dc000032"
+      ]
+    ],
+    "type": "change",
+    "name": "データを読む",
+    "rules": [
+      {
+        "t": "set",
+        "p": "db",
+        "pt": "msg",
+        "to": "degimono",
+        "tot": "global"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false
+  },
+  {
+    "id": "dc000032",
+    "z": "dc000022",
+    "x": 500,
+    "y": 280,
+    "wires": [
+      [
+        "dc000033"
       ]
     ],
     "type": "function",
-    "name": "品番",
-    "func": "msg.params = { $id: msg.req.params.id };\nreturn msg;",
+    "name": "品番で1件探す",
+    "func": "msg.payload = msg.db.parts.find(p => p.id === msg.req.params.id) || null;\nreturn msg;",
     "outputs": 1,
     "timeout": 0,
     "noerr": 0,
@@ -589,46 +849,57 @@
     "libs": []
   },
   {
-    "id": "dg000027",
-    "z": "dg000016",
-    "x": 540,
+    "id": "dc000033",
+    "z": "dc000022",
+    "x": 690,
     "y": 280,
     "wires": [
       [
-        "dg000028"
+        "dc000036"
+      ],
+      [
+        "dc000034"
       ]
     ],
-    "type": "sqlite",
-    "mydb": "dg000001",
-    "sqlquery": "prepared",
-    "sql": "SELECT p.*, p.stock <= p.reorder_point AS below_point,\n  (SELECT json_object('id', o.id, 'part_id', o.part_id, 'quantity', o.quantity,\n     'orderer_id', o.orderer_id, 'ordered_date', o.ordered_date,\n     'expected_date', o.expected_date, 'status', o.status)\n   FROM orders o WHERE o.part_id = p.id AND o.status = '入荷待ち' ORDER BY o.id LIMIT 1) AS waiting_order\nFROM parts p\nWHERE p.id = $id",
-    "name": "部品1件"
+    "type": "switch",
+    "name": "見つかった？",
+    "property": "payload",
+    "propertyType": "msg",
+    "rules": [
+      {
+        "t": "null"
+      },
+      {
+        "t": "else"
+      }
+    ],
+    "checkall": "false",
+    "repair": false,
+    "outputs": 2
   },
   {
-    "id": "dg000028",
-    "z": "dg000016",
-    "x": 740,
-    "y": 280,
+    "id": "dc000034",
+    "z": "dc000022",
+    "x": 880,
+    "y": 300,
     "wires": [
       [
-        "dg000029"
+        "dc000035"
       ]
     ],
-    "type": "function",
-    "name": "形を整える（1件）",
-    "func": "msg.payload = msg.payload.map(p => {\n    p.below_point = p.below_point === 1;\n    p.waiting_order = p.waiting_order ? JSON.parse(p.waiting_order) : null;\n    p.state = p.waiting_order ? \"入荷待ち\" : (p.below_point ? \"要発注\" : \"発注不要\");\n    return p;\n});\nif (msg.payload.length === 0) {\n    msg.statusCode = 404;\n    msg.payload = { status: \"error\", message: \"部品が見つかりません\" };\n} else {\n    msg.payload = msg.payload[0];\n}\nreturn msg;",
-    "outputs": 1,
-    "timeout": 0,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": []
+    "type": "link call",
+    "name": "部品に状態を付ける",
+    "links": [
+      "dc00000c"
+    ],
+    "linkType": "static",
+    "timeout": "30"
   },
   {
-    "id": "dg000029",
-    "z": "dg000016",
-    "x": 940,
-    "y": 280,
+    "id": "dc000035",
+    "z": "dc000022",
+    "x": 1070,
+    "y": 300,
     "wires": [],
     "type": "http response",
     "name": "",
@@ -636,13 +907,47 @@
     "headers": {}
   },
   {
-    "id": "dg00002a",
-    "z": "dg000016",
-    "x": 140,
+    "id": "dc000036",
+    "z": "dc000022",
+    "x": 880,
     "y": 340,
     "wires": [
       [
-        "dg00002b"
+        "dc000035"
+      ]
+    ],
+    "type": "change",
+    "name": "部品なし",
+    "rules": [
+      {
+        "t": "set",
+        "p": "statusCode",
+        "pt": "msg",
+        "to": "404",
+        "tot": "num"
+      },
+      {
+        "t": "set",
+        "p": "payload",
+        "pt": "msg",
+        "to": "{ \"status\": \"error\", \"message\": \"部品が見つかりません\" }",
+        "tot": "jsonata"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false
+  },
+  {
+    "id": "dc000037",
+    "z": "dc000022",
+    "x": 120,
+    "y": 400,
+    "wires": [
+      [
+        "dc000038"
       ]
     ],
     "type": "http in",
@@ -653,54 +958,90 @@
     "swaggerDoc": ""
   },
   {
-    "id": "dg00002b",
-    "z": "dg000016",
-    "x": 340,
-    "y": 340,
+    "id": "dc000038",
+    "z": "dc000022",
+    "x": 310,
+    "y": 400,
     "wires": [
       [
-        "dg00002c"
+        "dc000039"
       ]
     ],
-    "type": "function",
-    "name": "条件なし",
-    "func": "msg.params = {};\nreturn msg;",
-    "outputs": 1,
-    "timeout": 0,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": []
+    "type": "change",
+    "name": "データを読む",
+    "rules": [
+      {
+        "t": "set",
+        "p": "db",
+        "pt": "msg",
+        "to": "degimono",
+        "tot": "global"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false
   },
   {
-    "id": "dg00002c",
-    "z": "dg000016",
-    "x": 540,
-    "y": 340,
+    "id": "dc000039",
+    "z": "dc000022",
+    "x": 500,
+    "y": 400,
     "wires": [
       [
-        "dg00002d"
+        "dc00003a"
       ]
     ],
-    "type": "sqlite",
-    "mydb": "dg000001",
-    "sqlquery": "prepared",
-    "sql": "SELECT p.*, p.stock <= p.reorder_point AS below_point,\n  (SELECT json_object('id', o.id, 'part_id', o.part_id, 'quantity', o.quantity,\n     'orderer_id', o.orderer_id, 'ordered_date', o.ordered_date,\n     'expected_date', o.expected_date, 'status', o.status)\n   FROM orders o WHERE o.part_id = p.id AND o.status = '入荷待ち' ORDER BY o.id LIMIT 1) AS waiting_order\nFROM parts p\nORDER BY p.id",
-    "name": "全部品"
+    "type": "change",
+    "name": "全部品",
+    "rules": [
+      {
+        "t": "set",
+        "p": "payload",
+        "pt": "msg",
+        "to": "db.parts",
+        "tot": "msg"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false
   },
   {
-    "id": "dg00002d",
-    "z": "dg000016",
-    "x": 740,
-    "y": 340,
+    "id": "dc00003a",
+    "z": "dc000022",
+    "x": 690,
+    "y": 400,
     "wires": [
       [
-        "dg00002e"
+        "dc00003b"
+      ]
+    ],
+    "type": "link call",
+    "name": "部品に状態を付ける",
+    "links": [
+      "dc00000c"
+    ],
+    "linkType": "static",
+    "timeout": "30"
+  },
+  {
+    "id": "dc00003b",
+    "z": "dc000022",
+    "x": 880,
+    "y": 400,
+    "wires": [
+      [
+        "dc00003c"
       ]
     ],
     "type": "function",
     "name": "未発注だけ・要発注を先頭",
-    "func": "msg.payload = msg.payload.map(p => {\n    p.below_point = p.below_point === 1;\n    p.waiting_order = p.waiting_order ? JSON.parse(p.waiting_order) : null;\n    p.state = p.waiting_order ? \"入荷待ち\" : (p.below_point ? \"要発注\" : \"発注不要\");\n    return p;\n});\nmsg.payload = msg.payload\n    .filter(p => p.waiting_order === null)\n    .sort((a, b) => (b.below_point - a.below_point) || a.id.localeCompare(b.id));\nreturn msg;",
+    "func": "msg.payload = msg.payload\n    .filter(p => p.waiting_order === null)\n    .sort((a, b) => (b.below_point - a.below_point) || a.id.localeCompare(b.id));\nreturn msg;",
     "outputs": 1,
     "timeout": 0,
     "noerr": 0,
@@ -709,10 +1050,10 @@
     "libs": []
   },
   {
-    "id": "dg00002e",
-    "z": "dg000016",
-    "x": 940,
-    "y": 340,
+    "id": "dc00003c",
+    "z": "dc000022",
+    "x": 1070,
+    "y": 400,
     "wires": [],
     "type": "http response",
     "name": "",
@@ -720,13 +1061,13 @@
     "headers": {}
   },
   {
-    "id": "dg00002f",
-    "z": "dg000016",
-    "x": 140,
-    "y": 400,
+    "id": "dc00003d",
+    "z": "dc000022",
+    "x": 120,
+    "y": 460,
     "wires": [
       [
-        "dg000030"
+        "dc00003e"
       ]
     ],
     "type": "http in",
@@ -737,18 +1078,45 @@
     "swaggerDoc": ""
   },
   {
-    "id": "dg000030",
-    "z": "dg000016",
-    "x": 340,
-    "y": 400,
+    "id": "dc00003e",
+    "z": "dc000022",
+    "x": 310,
+    "y": 460,
     "wires": [
       [
-        "dg000031"
+        "dc00003f"
+      ]
+    ],
+    "type": "change",
+    "name": "データを読む",
+    "rules": [
+      {
+        "t": "set",
+        "p": "db",
+        "pt": "msg",
+        "to": "degimono",
+        "tot": "global"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false
+  },
+  {
+    "id": "dc00003f",
+    "z": "dc000022",
+    "x": 500,
+    "y": 460,
+    "wires": [
+      [
+        "dc000040"
       ]
     ],
     "type": "function",
-    "name": "条件なし",
-    "func": "msg.params = {};\nreturn msg;",
+    "name": "入荷待ちに品名・発注者を付ける",
+    "func": "const db = msg.db;\nconst list = [];\nfor (const o of db.orders) {\n    if (o.status !== \"入荷待ち\") continue;\n    const p = db.parts.find(p => p.id === o.part_id);\n    const e = db.employees.find(e => e.id === o.orderer_id);\n    if (!p || !e) continue;  // 部品か発注者がなければ出さない\n    list.push({ ...o, part_name: p.name, location: p.location, stock: p.stock, orderer_name: e.name });\n}\nmsg.payload = list.sort((a, b) => a.expected_date.localeCompare(b.expected_date) || a.id - b.id);\nreturn msg;",
     "outputs": 1,
     "timeout": 0,
     "noerr": 0,
@@ -757,26 +1125,10 @@
     "libs": []
   },
   {
-    "id": "dg000031",
-    "z": "dg000016",
-    "x": 540,
-    "y": 400,
-    "wires": [
-      [
-        "dg000032"
-      ]
-    ],
-    "type": "sqlite",
-    "mydb": "dg000001",
-    "sqlquery": "prepared",
-    "sql": "SELECT o.*, p.name AS part_name, p.location, p.stock, e.name AS orderer_name\nFROM orders o JOIN parts p ON p.id = o.part_id JOIN employees e ON e.id = o.orderer_id\nWHERE o.status = '入荷待ち' ORDER BY o.expected_date, o.id",
-    "name": "入荷待ち一覧"
-  },
-  {
-    "id": "dg000032",
-    "z": "dg000016",
-    "x": 740,
-    "y": 400,
+    "id": "dc000040",
+    "z": "dc000022",
+    "x": 690,
+    "y": 460,
     "wires": [],
     "type": "http response",
     "name": "",
@@ -784,13 +1136,13 @@
     "headers": {}
   },
   {
-    "id": "dg000033",
-    "z": "dg000016",
-    "x": 140,
-    "y": 460,
+    "id": "dc000041",
+    "z": "dc000022",
+    "x": 120,
+    "y": 520,
     "wires": [
       [
-        "dg000034"
+        "dc000042"
       ]
     ],
     "type": "http in",
@@ -801,18 +1153,63 @@
     "swaggerDoc": ""
   },
   {
-    "id": "dg000034",
-    "z": "dg000016",
-    "x": 340,
-    "y": 460,
+    "id": "dc000042",
+    "z": "dc000022",
+    "x": 310,
+    "y": 520,
     "wires": [
       [
-        "dg000035"
+        "dc000043"
+      ]
+    ],
+    "type": "change",
+    "name": "データを読む",
+    "rules": [
+      {
+        "t": "set",
+        "p": "db",
+        "pt": "msg",
+        "to": "degimono",
+        "tot": "global"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false
+  },
+  {
+    "id": "dc000043",
+    "z": "dc000022",
+    "x": 500,
+    "y": 520,
+    "wires": [
+      [
+        "dc000044"
+      ]
+    ],
+    "type": "link call",
+    "name": "履歴一覧を作る",
+    "links": [
+      "dc000014"
+    ],
+    "linkType": "static",
+    "timeout": "30"
+  },
+  {
+    "id": "dc000044",
+    "z": "dc000022",
+    "x": 690,
+    "y": 520,
+    "wires": [
+      [
+        "dc000045"
       ]
     ],
     "type": "function",
-    "name": "条件なし",
-    "func": "msg.params = {};\nreturn msg;",
+    "name": "新しい200件",
+    "func": "msg.payload = msg.payload.slice(0, 200);\nreturn msg;",
     "outputs": 1,
     "timeout": 0,
     "noerr": 0,
@@ -821,26 +1218,10 @@
     "libs": []
   },
   {
-    "id": "dg000035",
-    "z": "dg000016",
-    "x": 540,
-    "y": 460,
-    "wires": [
-      [
-        "dg000036"
-      ]
-    ],
-    "type": "sqlite",
-    "mydb": "dg000001",
-    "sqlquery": "prepared",
-    "sql": "SELECT h.*, p.name AS part_name FROM history h LEFT JOIN parts p ON p.id = h.part_id\nORDER BY h.ts DESC, h.id DESC LIMIT 200",
-    "name": "履歴（新しい順200件）"
-  },
-  {
-    "id": "dg000036",
-    "z": "dg000016",
-    "x": 740,
-    "y": 460,
+    "id": "dc000045",
+    "z": "dc000022",
+    "x": 880,
+    "y": 520,
     "wires": [],
     "type": "http response",
     "name": "",
@@ -848,13 +1229,13 @@
     "headers": {}
   },
   {
-    "id": "dg000037",
-    "z": "dg000016",
-    "x": 140,
-    "y": 520,
+    "id": "dc000046",
+    "z": "dc000022",
+    "x": 120,
+    "y": 580,
     "wires": [
       [
-        "dg000038"
+        "dc000047"
       ]
     ],
     "type": "http in",
@@ -865,54 +1246,63 @@
     "swaggerDoc": ""
   },
   {
-    "id": "dg000038",
-    "z": "dg000016",
-    "x": 340,
-    "y": 520,
+    "id": "dc000047",
+    "z": "dc000022",
+    "x": 310,
+    "y": 580,
     "wires": [
       [
-        "dg000039"
+        "dc000048"
       ]
     ],
-    "type": "function",
-    "name": "条件なし",
-    "func": "msg.params = {};\nreturn msg;",
-    "outputs": 1,
-    "timeout": 0,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": []
+    "type": "change",
+    "name": "データを読む",
+    "rules": [
+      {
+        "t": "set",
+        "p": "db",
+        "pt": "msg",
+        "to": "degimono",
+        "tot": "global"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false
   },
   {
-    "id": "dg000039",
-    "z": "dg000016",
-    "x": 540,
-    "y": 520,
+    "id": "dc000048",
+    "z": "dc000022",
+    "x": 500,
+    "y": 580,
     "wires": [
       [
-        "dg00003a"
+        "dc000049"
       ]
     ],
-    "type": "sqlite",
-    "mydb": "dg000001",
-    "sqlquery": "prepared",
-    "sql": "SELECT h.*, p.name AS part_name FROM history h LEFT JOIN parts p ON p.id = h.part_id\nORDER BY h.ts DESC, h.id DESC",
-    "name": "履歴（全件）"
+    "type": "link call",
+    "name": "履歴一覧を作る",
+    "links": [
+      "dc000014"
+    ],
+    "linkType": "static",
+    "timeout": "30"
   },
   {
-    "id": "dg00003a",
-    "z": "dg000016",
-    "x": 740,
-    "y": 520,
+    "id": "dc000049",
+    "z": "dc000022",
+    "x": 690,
+    "y": 580,
     "wires": [
       [
-        "dg00003b"
+        "dc00004a"
       ]
     ],
     "type": "function",
     "name": "CSVにする",
-    "func": "const cell = v => {\n    const s = String(v ?? \"\");\n    return /[\",\\n]/.test(s) ? '\"' + s.replace(/\"/g, '\"\"') + '\"' : s;\n};\nconst lines = [[\"日時\", \"種別\", \"品番\", \"品名\", \"変動数量\", \"作業者名\", \"使用部署\", \"備考\"]];\nfor (const r of msg.payload) {\n    lines.push([r.ts, r.kind, r.part_id, r.part_name, r.quantity, r.worker_name, r.department, r.note]);\n}\nmsg.payload = \"\\ufeff\" + lines.map(l => l.map(cell).join(\",\")).join(\"\\r\\n\") + \"\\r\\n\";\nmsg.headers = {\n    \"Content-Type\": \"text/csv; charset=utf-8\",\n    \"Content-Disposition\": \"attachment; filename=history.csv\",\n};\nreturn msg;",
+    "func": "const cell = v => {\n    const s = String(v ?? \"\");\n    return /[\",\\n]/.test(s) ? '\"' + s.replace(/\"/g, '\"\"') + '\"' : s;\n};\n// 変動数量は在庫の増減（出庫はマイナス、発注は在庫が動かないので0）。発注の数は「発注数」の列に出す\nconst change = r => r.kind === \"出庫\" ? -r.quantity : (r.kind === \"発注\" ? 0 : r.quantity);\nconst lines = [[\"日時\", \"種別\", \"品番\", \"品名\", \"変動数量\", \"発注数\", \"作業者名\", \"使用部署\", \"備考\"]];\nfor (const r of msg.payload) {\n    lines.push([r.ts, r.kind, r.part_id, r.part_name, change(r), r.kind === \"発注\" ? r.quantity : \"\",\n        r.worker_name, r.department, r.note]);\n}\n// Excel で文字化けしないよう BOM を付ける\nmsg.payload = \"\\ufeff\" + lines.map(l => l.map(cell).join(\",\")).join(\"\\r\\n\") + \"\\r\\n\";\nmsg.headers = {\n    \"Content-Type\": \"text/csv; charset=utf-8\",\n    \"Content-Disposition\": \"attachment; filename=history.csv\",\n};\nreturn msg;",
     "outputs": 1,
     "timeout": 0,
     "noerr": 0,
@@ -921,10 +1311,10 @@
     "libs": []
   },
   {
-    "id": "dg00003b",
-    "z": "dg000016",
-    "x": 940,
-    "y": 520,
+    "id": "dc00004a",
+    "z": "dc000022",
+    "x": 880,
+    "y": 580,
     "wires": [],
     "type": "http response",
     "name": "",
@@ -932,13 +1322,13 @@
     "headers": {}
   },
   {
-    "id": "dg00003c",
-    "z": "dg000016",
-    "x": 140,
-    "y": 600,
+    "id": "dc00004b",
+    "z": "dc000022",
+    "x": 120,
+    "y": 660,
     "wires": [
       [
-        "dg00003d"
+        "dc00004c"
       ]
     ],
     "type": "catch",
@@ -947,13 +1337,13 @@
     "uncaught": false
   },
   {
-    "id": "dg00003d",
-    "z": "dg000016",
-    "x": 340,
-    "y": 600,
+    "id": "dc00004c",
+    "z": "dc000022",
+    "x": 310,
+    "y": 660,
     "wires": [
       [
-        "dg00003e"
+        "dc00004d"
       ]
     ],
     "type": "function",
@@ -967,10 +1357,10 @@
     "libs": []
   },
   {
-    "id": "dg00003e",
-    "z": "dg000016",
-    "x": 540,
-    "y": 600,
+    "id": "dc00004d",
+    "z": "dc000022",
+    "x": 500,
+    "y": 660,
     "wires": [],
     "type": "http response",
     "name": "",
@@ -978,16 +1368,16 @@
     "headers": {}
   },
   {
-    "id": "dg00003f",
+    "id": "dc00004e",
     "type": "tab",
-    "label": "登録API",
+    "label": "登録API（完成品）",
     "disabled": false,
     "info": "画面からの登録（POST）。入力チェックは最小限。"
   },
   {
-    "id": "dg000040",
-    "z": "dg00003f",
-    "x": 140,
+    "id": "dc00004f",
+    "z": "dc00004e",
+    "x": 120,
     "y": 40,
     "wires": [],
     "type": "comment",
@@ -995,13 +1385,13 @@
     "info": ""
   },
   {
-    "id": "dg000041",
-    "z": "dg00003f",
-    "x": 140,
+    "id": "dc000050",
+    "z": "dc00004e",
+    "x": 120,
     "y": 100,
     "wires": [
       [
-        "dg000042"
+        "dc000051"
       ]
     ],
     "type": "http in",
@@ -1012,18 +1402,45 @@
     "swaggerDoc": ""
   },
   {
-    "id": "dg000042",
-    "z": "dg00003f",
-    "x": 340,
+    "id": "dc000051",
+    "z": "dc00004e",
+    "x": 310,
     "y": 100,
     "wires": [
       [
-        "dg000043"
+        "dc000052"
+      ]
+    ],
+    "type": "change",
+    "name": "データを読む",
+    "rules": [
+      {
+        "t": "set",
+        "p": "db",
+        "pt": "msg",
+        "to": "degimono",
+        "tot": "global"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false
+  },
+  {
+    "id": "dc000052",
+    "z": "dc00004e",
+    "x": 500,
+    "y": 100,
+    "wires": [
+      [
+        "dc000053"
       ]
     ],
     "type": "function",
-    "name": "部品の値",
-    "func": "const d = msg.payload;\nmsg.data = d;\nmsg.params = {\n    $id: String(d.part_id || \"\").trim(),\n    $name: String(d.name || \"\").trim(),\n    $location: d.location || \"\",\n    $stock: Number(d.stock) || 0,\n    $reorder_point: Number(d.reorder_point) || 0,\n    $departments: d.departments || \"\",\n};\nreturn msg;",
+    "name": "部品の値を読む",
+    "func": "const d = msg.payload;\nmsg.part = {\n    id: String(d.part_id || \"\").trim(),\n    name: String(d.name || \"\").trim(),\n    location: d.location || \"\",\n    stock: Number(d.stock) || 0,\n    reorder_point: Number(d.reorder_point) || 0,\n    departments: d.departments || \"\",\n};\nmsg.employee_id = d.employee_id;\nreturn msg;",
     "outputs": 1,
     "timeout": 0,
     "noerr": 0,
@@ -1032,117 +1449,211 @@
     "libs": []
   },
   {
-    "id": "dg000043",
-    "z": "dg00003f",
-    "x": 540,
+    "id": "dc000053",
+    "z": "dc00004e",
+    "x": 690,
     "y": 100,
     "wires": [
       [
-        "dg000044"
+        "dc00005c"
+      ],
+      [
+        "dc000054"
       ]
     ],
-    "type": "sqlite",
-    "mydb": "dg000001",
-    "sqlquery": "prepared",
-    "sql": "INSERT INTO parts (id, name, location, stock, reorder_point, departments)\nVALUES ($id, $name, $location, $stock, $reorder_point, $departments)",
-    "name": "部品を追加"
+    "type": "switch",
+    "name": "登録済み？",
+    "property": "part",
+    "propertyType": "msg",
+    "rules": [
+      {
+        "t": "jsonata_exp",
+        "v": "part.id in db.parts.id",
+        "vt": "jsonata"
+      },
+      {
+        "t": "else"
+      }
+    ],
+    "checkall": "false",
+    "repair": false,
+    "outputs": 2
   },
   {
-    "id": "dg000044",
-    "z": "dg00003f",
-    "x": 740,
+    "id": "dc000054",
+    "z": "dc00004e",
+    "x": 880,
     "y": 100,
     "wires": [
       [
-        "dg000045"
+        "dc000055"
       ]
     ],
     "type": "function",
+    "name": "部品を足す",
+    "func": "msg.db.parts.push(msg.part);\nreturn msg;",
+    "outputs": 1,
+    "timeout": 0,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": []
+  },
+  {
+    "id": "dc000055",
+    "z": "dc00004e",
+    "x": 1070,
+    "y": 100,
+    "wires": [
+      [
+        "dc000056"
+      ]
+    ],
+    "type": "change",
     "name": "履歴の値",
-    "func": "const d = msg.data;\nmsg.params = {\n    $part_id: d.part_id, $quantity: Number(d.stock) || 0, $employee_id: d.employee_id,\n    $note: \"新規部品登録（初期在庫 \" + (Number(d.stock) || 0) + \"、発注点 \" + (Number(d.reorder_point) || 0) + \"）\",\n};\nreturn msg;",
-    "outputs": 1,
-    "timeout": 0,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": []
+    "rules": [
+      {
+        "t": "set",
+        "p": "history",
+        "pt": "msg",
+        "to": "{\n  \"kind\": \"登録\", \"part_id\": part.id, \"quantity\": part.stock, \"employee_id\": employee_id,\n  \"note\": \"新規部品登録（初期在庫 \" & part.stock & \"、発注点 \" & part.reorder_point & \"）\"\n}",
+        "tot": "jsonata"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false
   },
   {
-    "id": "dg000045",
-    "z": "dg00003f",
-    "x": 940,
+    "id": "dc000056",
+    "z": "dc00004e",
+    "x": 1260,
     "y": 100,
     "wires": [
       [
-        "dg000046"
+        "dc000057"
       ]
     ],
-    "type": "sqlite",
-    "mydb": "dg000001",
-    "sqlquery": "prepared",
-    "sql": "INSERT INTO history (ts, kind, part_id, quantity, worker_id, worker_name, department, note)\nSELECT strftime('%Y-%m-%d %H:%M', 'now', 'localtime'), '登録', $part_id, $quantity, id, name, department, $note\nFROM employees WHERE id = $employee_id",
-    "name": "履歴に登録"
+    "type": "link call",
+    "name": "履歴に残す",
+    "links": [
+      "dc000010"
+    ],
+    "linkType": "static",
+    "timeout": "30"
   },
   {
-    "id": "dg000046",
-    "z": "dg00003f",
-    "x": 1140,
+    "id": "dc000057",
+    "z": "dc00004e",
+    "x": 1450,
     "y": 100,
     "wires": [
       [
-        "dg000047"
+        "dc000058"
       ]
     ],
-    "type": "function",
-    "name": "品番",
-    "func": "msg.params = { $id: msg.data.part_id };\nreturn msg;",
-    "outputs": 1,
-    "timeout": 0,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": []
+    "type": "change",
+    "name": "保存する",
+    "rules": [
+      {
+        "t": "set",
+        "p": "degimono",
+        "pt": "global",
+        "to": "db",
+        "tot": "msg"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false
   },
   {
-    "id": "dg000047",
-    "z": "dg00003f",
-    "x": 1340,
+    "id": "dc000058",
+    "z": "dc00004e",
+    "x": 1640,
     "y": 100,
     "wires": [
       [
-        "dg000048"
+        "dc000059"
       ]
     ],
-    "type": "sqlite",
-    "mydb": "dg000001",
-    "sqlquery": "prepared",
-    "sql": "SELECT p.*, p.stock <= p.reorder_point AS below_point,\n  (SELECT json_object('id', o.id, 'part_id', o.part_id, 'quantity', o.quantity,\n     'orderer_id', o.orderer_id, 'ordered_date', o.ordered_date,\n     'expected_date', o.expected_date, 'status', o.status)\n   FROM orders o WHERE o.part_id = p.id AND o.status = '入荷待ち' ORDER BY o.id LIMIT 1) AS waiting_order\nFROM parts p\nWHERE p.id = $id",
-    "name": "登録した部品"
+    "type": "change",
+    "name": "登録した部品",
+    "rules": [
+      {
+        "t": "set",
+        "p": "payload",
+        "pt": "msg",
+        "to": "part",
+        "tot": "msg"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false
   },
   {
-    "id": "dg000048",
-    "z": "dg00003f",
-    "x": 1540,
+    "id": "dc000059",
+    "z": "dc00004e",
+    "x": 1830,
     "y": 100,
     "wires": [
       [
-        "dg000049"
+        "dc00005a"
       ]
     ],
-    "type": "function",
+    "type": "link call",
+    "name": "部品に状態を付ける",
+    "links": [
+      "dc00000c"
+    ],
+    "linkType": "static",
+    "timeout": "30"
+  },
+  {
+    "id": "dc00005a",
+    "z": "dc00004e",
+    "x": 2020,
+    "y": 100,
+    "wires": [
+      [
+        "dc00005b"
+      ]
+    ],
+    "type": "change",
     "name": "応答",
-    "func": "msg.payload = msg.payload.map(p => {\n    p.below_point = p.below_point === 1;\n    p.waiting_order = p.waiting_order ? JSON.parse(p.waiting_order) : null;\n    p.state = p.waiting_order ? \"入荷待ち\" : (p.below_point ? \"要発注\" : \"発注不要\");\n    return p;\n});\nmsg.statusCode = 201;\nmsg.payload = { status: \"ok\", message: msg.data.name + \"（\" + msg.data.part_id + \"）を登録しました\", part: msg.payload[0] };\nreturn msg;",
-    "outputs": 1,
-    "timeout": 0,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": []
+    "rules": [
+      {
+        "t": "set",
+        "p": "statusCode",
+        "pt": "msg",
+        "to": "201",
+        "tot": "num"
+      },
+      {
+        "t": "set",
+        "p": "payload",
+        "pt": "msg",
+        "to": "{ \"status\": \"ok\", \"message\": payload.name & \"（\" & payload.id & \"）を登録しました\", \"part\": payload }",
+        "tot": "jsonata"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false
   },
   {
-    "id": "dg000049",
-    "z": "dg00003f",
-    "x": 1740,
+    "id": "dc00005b",
+    "z": "dc00004e",
+    "x": 2210,
     "y": 100,
     "wires": [],
     "type": "http response",
@@ -1151,23 +1662,57 @@
     "headers": {}
   },
   {
-    "id": "dg00004a",
-    "z": "dg00003f",
-    "x": 140,
-    "y": 180,
+    "id": "dc00005c",
+    "z": "dc00004e",
+    "x": 880,
+    "y": 160,
+    "wires": [
+      [
+        "dc00005b"
+      ]
+    ],
+    "type": "change",
+    "name": "登録済み",
+    "rules": [
+      {
+        "t": "set",
+        "p": "statusCode",
+        "pt": "msg",
+        "to": "409",
+        "tot": "num"
+      },
+      {
+        "t": "set",
+        "p": "payload",
+        "pt": "msg",
+        "to": "{ \"status\": \"error\", \"message\": \"品番 \" & part.id & \" は登録済みです\" }",
+        "tot": "jsonata"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false
+  },
+  {
+    "id": "dc00005d",
+    "z": "dc00004e",
+    "x": 120,
+    "y": 240,
     "wires": [],
     "type": "comment",
     "name": "発注結果の登録 POST /api/orders",
     "info": ""
   },
   {
-    "id": "dg00004b",
-    "z": "dg00003f",
-    "x": 140,
-    "y": 240,
+    "id": "dc00005e",
+    "z": "dc00004e",
+    "x": 120,
+    "y": 300,
     "wires": [
       [
-        "dg00004c"
+        "dc00005f"
       ]
     ],
     "type": "http in",
@@ -1178,18 +1723,45 @@
     "swaggerDoc": ""
   },
   {
-    "id": "dg00004c",
-    "z": "dg00003f",
-    "x": 340,
-    "y": 240,
+    "id": "dc00005f",
+    "z": "dc00004e",
+    "x": 310,
+    "y": 300,
     "wires": [
       [
-        "dg00004d"
+        "dc000060"
+      ]
+    ],
+    "type": "change",
+    "name": "データを読む",
+    "rules": [
+      {
+        "t": "set",
+        "p": "db",
+        "pt": "msg",
+        "to": "degimono",
+        "tot": "global"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false
+  },
+  {
+    "id": "dc000060",
+    "z": "dc00004e",
+    "x": 500,
+    "y": 300,
+    "wires": [
+      [
+        "dc000061"
       ]
     ],
     "type": "function",
-    "name": "発注の値",
-    "func": "const d = msg.payload;\nmsg.data = d;\nmsg.params = {\n    $part_id: d.part_id, $quantity: Number(d.quantity), $orderer_id: d.employee_id,\n    $ordered_date: d.ordered_date, $expected_date: d.expected_date,\n};\nreturn msg;",
+    "name": "発注を足す",
+    "func": "const d = msg.payload;\nconst db = msg.db;\ndb.orders.push({\n    id: ++db.seq.order, part_id: d.part_id, quantity: Number(d.quantity), orderer_id: d.employee_id,\n    ordered_date: d.ordered_date, expected_date: d.expected_date,\n    status: \"入荷待ち\", received_date: null, received_qty: null, receiver_id: null,\n});\nreturn msg;",
     "outputs": 1,
     "timeout": 0,
     "noerr": 0,
@@ -1198,82 +1770,109 @@
     "libs": []
   },
   {
-    "id": "dg00004d",
-    "z": "dg00003f",
-    "x": 540,
-    "y": 240,
+    "id": "dc000061",
+    "z": "dc00004e",
+    "x": 690,
+    "y": 300,
     "wires": [
       [
-        "dg00004e"
+        "dc000062"
       ]
     ],
-    "type": "sqlite",
-    "mydb": "dg000001",
-    "sqlquery": "prepared",
-    "sql": "INSERT INTO orders (part_id, quantity, orderer_id, ordered_date, expected_date)\nVALUES ($part_id, $quantity, $orderer_id, $ordered_date, $expected_date)",
-    "name": "発注を追加"
-  },
-  {
-    "id": "dg00004e",
-    "z": "dg00003f",
-    "x": 740,
-    "y": 240,
-    "wires": [
-      [
-        "dg00004f"
-      ]
-    ],
-    "type": "function",
+    "type": "change",
     "name": "履歴の値",
-    "func": "const d = msg.data;\nmsg.params = {\n    $part_id: d.part_id, $quantity: Number(d.quantity), $employee_id: d.employee_id,\n    $note: \"入荷予定日 \" + d.expected_date,\n};\nreturn msg;",
-    "outputs": 1,
-    "timeout": 0,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": []
+    "rules": [
+      {
+        "t": "set",
+        "p": "history",
+        "pt": "msg",
+        "to": "{\n  \"kind\": \"発注\", \"part_id\": payload.part_id, \"quantity\": $number(payload.quantity),\n  \"employee_id\": payload.employee_id, \"note\": \"入荷予定日 \" & payload.expected_date\n}",
+        "tot": "jsonata"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false
   },
   {
-    "id": "dg00004f",
-    "z": "dg00003f",
-    "x": 940,
-    "y": 240,
+    "id": "dc000062",
+    "z": "dc00004e",
+    "x": 880,
+    "y": 300,
     "wires": [
       [
-        "dg000050"
+        "dc000063"
       ]
     ],
-    "type": "sqlite",
-    "mydb": "dg000001",
-    "sqlquery": "prepared",
-    "sql": "INSERT INTO history (ts, kind, part_id, quantity, worker_id, worker_name, department, note)\nSELECT strftime('%Y-%m-%d %H:%M', 'now', 'localtime'), '発注', $part_id, $quantity, id, name, department, $note\nFROM employees WHERE id = $employee_id",
-    "name": "履歴に発注"
+    "type": "link call",
+    "name": "履歴に残す",
+    "links": [
+      "dc000010"
+    ],
+    "linkType": "static",
+    "timeout": "30"
   },
   {
-    "id": "dg000050",
-    "z": "dg00003f",
-    "x": 1140,
-    "y": 240,
+    "id": "dc000063",
+    "z": "dc00004e",
+    "x": 1070,
+    "y": 300,
     "wires": [
       [
-        "dg000051"
+        "dc000064"
       ]
     ],
-    "type": "function",
+    "type": "change",
+    "name": "保存する",
+    "rules": [
+      {
+        "t": "set",
+        "p": "degimono",
+        "pt": "global",
+        "to": "db",
+        "tot": "msg"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false
+  },
+  {
+    "id": "dc000064",
+    "z": "dc00004e",
+    "x": 1260,
+    "y": 300,
+    "wires": [
+      [
+        "dc000065"
+      ]
+    ],
+    "type": "change",
     "name": "応答",
-    "func": "msg.payload = { status: \"ok\", message: \"発注結果を保存しました（入荷待ちへ移動）\" };\nreturn msg;",
-    "outputs": 1,
-    "timeout": 0,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": []
+    "rules": [
+      {
+        "t": "set",
+        "p": "payload",
+        "pt": "msg",
+        "to": "{\"status\":\"ok\",\"message\":\"発注結果を保存しました（入荷待ちへ移動）\"}",
+        "tot": "json"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false
   },
   {
-    "id": "dg000051",
-    "z": "dg00003f",
-    "x": 1340,
-    "y": 240,
+    "id": "dc000065",
+    "z": "dc00004e",
+    "x": 1450,
+    "y": 300,
     "wires": [],
     "type": "http response",
     "name": "",
@@ -1281,23 +1880,23 @@
     "headers": {}
   },
   {
-    "id": "dg000052",
-    "z": "dg00003f",
-    "x": 140,
-    "y": 320,
+    "id": "dc000066",
+    "z": "dc00004e",
+    "x": 120,
+    "y": 380,
     "wires": [],
     "type": "comment",
     "name": "入庫登録 POST /api/checkin（在庫を足す → 発注を入荷済に → 履歴）",
     "info": ""
   },
   {
-    "id": "dg000053",
-    "z": "dg00003f",
-    "x": 140,
-    "y": 380,
+    "id": "dc000067",
+    "z": "dc00004e",
+    "x": 120,
+    "y": 440,
     "wires": [
       [
-        "dg000054"
+        "dc000068"
       ]
     ],
     "type": "http in",
@@ -1308,18 +1907,45 @@
     "swaggerDoc": ""
   },
   {
-    "id": "dg000054",
-    "z": "dg00003f",
-    "x": 340,
-    "y": 380,
+    "id": "dc000068",
+    "z": "dc00004e",
+    "x": 310,
+    "y": 440,
     "wires": [
       [
-        "dg000055"
+        "dc000069"
+      ]
+    ],
+    "type": "change",
+    "name": "データを読む",
+    "rules": [
+      {
+        "t": "set",
+        "p": "db",
+        "pt": "msg",
+        "to": "degimono",
+        "tot": "global"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false
+  },
+  {
+    "id": "dc000069",
+    "z": "dc00004e",
+    "x": 500,
+    "y": 440,
+    "wires": [
+      [
+        "dc00006a"
       ]
     ],
     "type": "function",
-    "name": "入庫の値",
-    "func": "const d = msg.payload;\nmsg.data = d;\nmsg.params = { $order_id: Number(d.order_id), $quantity: Number(d.quantity) };\nreturn msg;",
+    "name": "発注と部品を探す",
+    "func": "const db = msg.db;\nmsg.order = db.orders.find(o => o.id === Number(msg.payload.order_id));\nmsg.part = (msg.order && db.parts.find(p => p.id === msg.order.part_id)) || null;\nreturn msg;",
     "outputs": 1,
     "timeout": 0,
     "noerr": 0,
@@ -1328,34 +1954,47 @@
     "libs": []
   },
   {
-    "id": "dg000055",
-    "z": "dg00003f",
-    "x": 540,
-    "y": 380,
+    "id": "dc00006a",
+    "z": "dc00004e",
+    "x": 690,
+    "y": 440,
     "wires": [
       [
-        "dg000056"
+        "dc000071"
+      ],
+      [
+        "dc00006b"
       ]
     ],
-    "type": "sqlite",
-    "mydb": "dg000001",
-    "sqlquery": "prepared",
-    "sql": "UPDATE parts SET stock = stock + $quantity\nWHERE id = (SELECT part_id FROM orders WHERE id = $order_id)",
-    "name": "在庫を足す"
+    "type": "switch",
+    "name": "見つかった？",
+    "property": "part",
+    "propertyType": "msg",
+    "rules": [
+      {
+        "t": "null"
+      },
+      {
+        "t": "else"
+      }
+    ],
+    "checkall": "false",
+    "repair": false,
+    "outputs": 2
   },
   {
-    "id": "dg000056",
-    "z": "dg00003f",
-    "x": 740,
-    "y": 380,
+    "id": "dc00006b",
+    "z": "dc00004e",
+    "x": 880,
+    "y": 440,
     "wires": [
       [
-        "dg000057"
+        "dc00006c"
       ]
     ],
     "type": "function",
-    "name": "発注の値",
-    "func": "const d = msg.data;\nmsg.params = {\n    $order_id: Number(d.order_id), $quantity: Number(d.quantity),\n    $received_date: d.received_date, $receiver_id: d.employee_id,\n};\nreturn msg;",
+    "name": "在庫を足して入荷済にする",
+    "func": "const d = msg.payload;\nconst qty = Number(d.quantity);\nmsg.part.stock += qty;\nObject.assign(msg.order, { status: \"入荷済\", received_date: d.received_date, received_qty: qty, receiver_id: d.employee_id });\nreturn msg;",
     "outputs": 1,
     "timeout": 0,
     "noerr": 0,
@@ -1364,118 +2003,109 @@
     "libs": []
   },
   {
-    "id": "dg000057",
-    "z": "dg00003f",
-    "x": 940,
-    "y": 380,
+    "id": "dc00006c",
+    "z": "dc00004e",
+    "x": 1070,
+    "y": 440,
     "wires": [
       [
-        "dg000058"
+        "dc00006d"
       ]
     ],
-    "type": "sqlite",
-    "mydb": "dg000001",
-    "sqlquery": "prepared",
-    "sql": "UPDATE orders SET status = '入荷済', received_date = $received_date,\n  received_qty = $quantity, receiver_id = $receiver_id\nWHERE id = $order_id",
-    "name": "入荷済にする"
-  },
-  {
-    "id": "dg000058",
-    "z": "dg00003f",
-    "x": 1140,
-    "y": 380,
-    "wires": [
-      [
-        "dg000059"
-      ]
-    ],
-    "type": "function",
-    "name": "部品を引く値",
-    "func": "msg.params = { $order_id: Number(msg.data.order_id) };\nreturn msg;",
-    "outputs": 1,
-    "timeout": 0,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": []
-  },
-  {
-    "id": "dg000059",
-    "z": "dg00003f",
-    "x": 1340,
-    "y": 380,
-    "wires": [
-      [
-        "dg00005a"
-      ]
-    ],
-    "type": "sqlite",
-    "mydb": "dg000001",
-    "sqlquery": "prepared",
-    "sql": "SELECT p.* FROM orders o JOIN parts p ON p.id = o.part_id WHERE o.id = $order_id",
-    "name": "発注の部品"
-  },
-  {
-    "id": "dg00005a",
-    "z": "dg00003f",
-    "x": 1540,
-    "y": 380,
-    "wires": [
-      [
-        "dg00005b"
-      ]
-    ],
-    "type": "function",
+    "type": "change",
     "name": "履歴の値",
-    "func": "const d = msg.data;\nmsg.part = msg.payload[0];\nmsg.params = {\n    $part_id: msg.part.id, $quantity: Number(d.quantity), $employee_id: d.employee_id,\n    $note: \"発注ID \" + d.order_id + \" 入荷\", $received_date: d.received_date,\n};\nreturn msg;",
-    "outputs": 1,
-    "timeout": 0,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": []
+    "rules": [
+      {
+        "t": "set",
+        "p": "history",
+        "pt": "msg",
+        "to": "{\n  \"kind\": \"入庫\", \"part_id\": part.id, \"quantity\": $number(payload.quantity), \"employee_id\": payload.employee_id,\n  \"date\": payload.received_date, \"note\": \"発注ID \" & payload.order_id & \" 入荷\"\n}",
+        "tot": "jsonata"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false
   },
   {
-    "id": "dg00005b",
-    "z": "dg00003f",
-    "x": 1740,
-    "y": 380,
+    "id": "dc00006d",
+    "z": "dc00004e",
+    "x": 1260,
+    "y": 440,
     "wires": [
       [
-        "dg00005c"
+        "dc00006e"
       ]
     ],
-    "type": "sqlite",
-    "mydb": "dg000001",
-    "sqlquery": "prepared",
-    "sql": "INSERT INTO history (ts, kind, part_id, quantity, worker_id, worker_name, department, note)\nSELECT $received_date || strftime(' %H:%M', 'now', 'localtime'), '入庫', $part_id, $quantity, id, name, department, $note\nFROM employees WHERE id = $employee_id",
-    "name": "履歴に入庫"
+    "type": "link call",
+    "name": "履歴に残す",
+    "links": [
+      "dc000010"
+    ],
+    "linkType": "static",
+    "timeout": "30"
   },
   {
-    "id": "dg00005c",
-    "z": "dg00003f",
-    "x": 1940,
-    "y": 380,
+    "id": "dc00006e",
+    "z": "dc00004e",
+    "x": 1450,
+    "y": 440,
     "wires": [
       [
-        "dg00005d"
+        "dc00006f"
       ]
     ],
-    "type": "function",
+    "type": "change",
+    "name": "保存する",
+    "rules": [
+      {
+        "t": "set",
+        "p": "degimono",
+        "pt": "global",
+        "to": "db",
+        "tot": "msg"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false
+  },
+  {
+    "id": "dc00006f",
+    "z": "dc00004e",
+    "x": 1640,
+    "y": 440,
+    "wires": [
+      [
+        "dc000070"
+      ]
+    ],
+    "type": "change",
     "name": "応答",
-    "func": "msg.payload = {\n    status: \"ok\", message: msg.part.name + \" を \" + msg.data.quantity + \"個 入庫しました\", stock: msg.part.stock,\n};\nreturn msg;",
-    "outputs": 1,
-    "timeout": 0,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": []
+    "rules": [
+      {
+        "t": "set",
+        "p": "payload",
+        "pt": "msg",
+        "to": "{ \"status\": \"ok\", \"message\": part.name & \" を \" & payload.quantity & \"個 入庫しました\", \"stock\": part.stock }",
+        "tot": "jsonata"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false
   },
   {
-    "id": "dg00005d",
-    "z": "dg00003f",
-    "x": 2140,
-    "y": 380,
+    "id": "dc000070",
+    "z": "dc00004e",
+    "x": 1830,
+    "y": 440,
     "wires": [],
     "type": "http response",
     "name": "",
@@ -1483,13 +2113,47 @@
     "headers": {}
   },
   {
-    "id": "dg00005e",
-    "z": "dg00003f",
-    "x": 140,
-    "y": 460,
+    "id": "dc000071",
+    "z": "dc00004e",
+    "x": 880,
+    "y": 500,
     "wires": [
       [
-        "dg00005f"
+        "dc000070"
+      ]
+    ],
+    "type": "change",
+    "name": "発注なし",
+    "rules": [
+      {
+        "t": "set",
+        "p": "statusCode",
+        "pt": "msg",
+        "to": "404",
+        "tot": "num"
+      },
+      {
+        "t": "set",
+        "p": "payload",
+        "pt": "msg",
+        "to": "{ \"status\": \"error\", \"message\": \"発注ID \" & payload.order_id & \" が見つかりません\" }",
+        "tot": "jsonata"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false
+  },
+  {
+    "id": "dc000072",
+    "z": "dc00004e",
+    "x": 120,
+    "y": 580,
+    "wires": [
+      [
+        "dc000073"
       ]
     ],
     "type": "catch",
@@ -1498,13 +2162,13 @@
     "uncaught": false
   },
   {
-    "id": "dg00005f",
-    "z": "dg00003f",
-    "x": 340,
-    "y": 460,
+    "id": "dc000073",
+    "z": "dc00004e",
+    "x": 310,
+    "y": 580,
     "wires": [
       [
-        "dg000060"
+        "dc000074"
       ]
     ],
     "type": "function",
@@ -1518,10 +2182,10 @@
     "libs": []
   },
   {
-    "id": "dg000060",
-    "z": "dg00003f",
-    "x": 540,
-    "y": 460,
+    "id": "dc000074",
+    "z": "dc00004e",
+    "x": 500,
+    "y": 580,
     "wires": [],
     "type": "http response",
     "name": "",
@@ -1529,268 +2193,26 @@
     "headers": {}
   },
   {
-    "id": "dg000061",
+    "id": "dc000075",
     "type": "tab",
-    "label": "出庫",
+    "label": "出庫（完成品）",
     "disabled": false,
-    "info": "M5StickC からの出庫。HTTP と MQTT のどちらから来ても『出庫処理』を呼ぶ。"
+    "info": "M5StickC からの出庫。HTTP と MQTT のどちらから来ても同じ流れで処理し、最後に返し先を分ける。"
   },
   {
-    "id": "dg000062",
-    "z": "dg000061",
-    "x": 140,
+    "id": "dc000076",
+    "z": "dc000075",
+    "x": 120,
     "y": 40,
     "wires": [],
     "type": "comment",
-    "name": "出庫処理（link call で呼ばれる共通部分）",
+    "name": "HTTP: POST /api/checkout（M5ダミー画面から）／ MQTT: degimono/checkout → degimono/status",
     "info": ""
   },
   {
-    "id": "dg000063",
-    "z": "dg000061",
-    "x": 140,
-    "y": 100,
-    "wires": [
-      [
-        "dg000064"
-      ]
-    ],
-    "type": "link in",
-    "name": "出庫処理",
-    "links": []
-  },
-  {
-    "id": "dg000064",
-    "z": "dg000061",
-    "x": 340,
-    "y": 100,
-    "wires": [
-      [
-        "dg000065"
-      ]
-    ],
-    "type": "function",
-    "name": "部品を引く値",
-    "func": "const d = msg.payload;\nmsg.data = {\n    part_id: String(d.part_id || \"\").trim(),\n    quantity: Number(d.quantity),\n    employee_id: String(d.employee_id || \"\"),\n    department: d.department || \"\",\n};\nmsg.params = { $id: msg.data.part_id };\nreturn msg;",
-    "outputs": 1,
-    "timeout": 0,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": []
-  },
-  {
-    "id": "dg000065",
-    "z": "dg000061",
-    "x": 540,
-    "y": 100,
-    "wires": [
-      [
-        "dg000066"
-      ]
-    ],
-    "type": "sqlite",
-    "mydb": "dg000001",
-    "sqlquery": "prepared",
-    "sql": "SELECT * FROM parts WHERE id = $id",
-    "name": "部品1件"
-  },
-  {
-    "id": "dg000066",
-    "z": "dg000061",
-    "x": 140,
-    "y": 160,
-    "wires": [
-      [
-        "dg000067"
-      ],
-      [
-        "dg00006b"
-      ]
-    ],
-    "type": "function",
-    "name": "在庫は足りる？",
-    "func": "const part = msg.payload[0];\nconst qty = msg.data.quantity;\nif (!part) {\n    msg.result = { status: \"error\", message: \"部品 \" + msg.data.part_id + \" が見つかりません\" };\n    msg.code = 404;\n    return [null, msg];\n}\nif (!(qty > 0) || part.stock < qty) {\n    msg.result = { status: \"error\", message: \"在庫不足です（現在庫: \" + part.stock + \", 要求: \" + qty + \"）\" };\n    msg.code = 409;\n    return [null, msg];\n}\nmsg.part = part;\nmsg.params = { $id: part.id, $quantity: qty };\nreturn [msg, null];",
-    "outputs": 2,
-    "timeout": 0,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": []
-  },
-  {
-    "id": "dg000067",
-    "z": "dg000061",
-    "x": 400,
-    "y": 160,
-    "wires": [
-      [
-        "dg000068"
-      ]
-    ],
-    "type": "sqlite",
-    "mydb": "dg000001",
-    "sqlquery": "prepared",
-    "sql": "UPDATE parts SET stock = stock - $quantity WHERE id = $id AND stock >= $quantity",
-    "name": "在庫を減らす"
-  },
-  {
-    "id": "dg000068",
-    "z": "dg000061",
-    "x": 600,
-    "y": 160,
-    "wires": [
-      [
-        "dg000069"
-      ]
-    ],
-    "type": "function",
-    "name": "履歴の値",
-    "func": "const d = msg.data;\nmsg.params = { $part_id: d.part_id, $quantity: d.quantity, $employee_id: d.employee_id, $department: d.department };\nreturn msg;",
-    "outputs": 1,
-    "timeout": 0,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": []
-  },
-  {
-    "id": "dg000069",
-    "z": "dg000061",
-    "x": 800,
-    "y": 160,
-    "wires": [
-      [
-        "dg00006a"
-      ]
-    ],
-    "type": "sqlite",
-    "mydb": "dg000001",
-    "sqlquery": "prepared",
-    "sql": "INSERT INTO history (ts, kind, part_id, quantity, worker_id, worker_name, department, note)\nSELECT strftime('%Y-%m-%d %H:%M', 'now', 'localtime'), '出庫', $part_id, $quantity, id, name,\n  COALESCE(NULLIF($department, ''), department), ''\nFROM employees WHERE id = $employee_id",
-    "name": "履歴に出庫"
-  },
-  {
-    "id": "dg00006a",
-    "z": "dg000061",
-    "x": 1000,
-    "y": 160,
-    "wires": [
-      [
-        "dg00006b"
-      ]
-    ],
-    "type": "function",
-    "name": "結果を作る",
-    "func": "const p = msg.part;\nconst stock = p.stock - msg.data.quantity;\nconst alert = stock <= p.reorder_point;\nmsg.code = 200;\nmsg.result = {\n    status: \"ok\",\n    message: p.name + \" を \" + msg.data.quantity + \"個 出庫しました\",\n    part_id: p.id, part_name: p.name, stock, reorder_point: p.reorder_point,\n    alert,  // true: M5でアラート音とメッセージを出す\n    alert_message: alert ? \"在庫が発注点以下です。発注してください\" : \"\",\n};\nreturn msg;",
-    "outputs": 1,
-    "timeout": 0,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": []
-  },
-  {
-    "id": "dg00006b",
-    "z": "dg000061",
-    "x": 1240,
-    "y": 240,
-    "wires": [],
-    "type": "link out",
-    "name": "呼び出し元へ戻す",
-    "mode": "return",
-    "links": []
-  },
-  {
-    "id": "dg00006c",
-    "z": "dg000061",
-    "x": 140,
-    "y": 320,
-    "wires": [],
-    "type": "comment",
-    "name": "HTTP: POST /api/checkout（M5ダミー画面から）",
-    "info": ""
-  },
-  {
-    "id": "dg00006d",
-    "z": "dg000061",
-    "x": 140,
-    "y": 380,
-    "wires": [
-      [
-        "dg00006e"
-      ]
-    ],
-    "type": "http in",
-    "name": "",
-    "url": "/api/checkout",
-    "method": "post",
-    "upload": false,
-    "swaggerDoc": ""
-  },
-  {
-    "id": "dg00006e",
-    "z": "dg000061",
-    "x": 340,
-    "y": 380,
-    "wires": [
-      [
-        "dg00006f"
-      ]
-    ],
-    "type": "link call",
-    "name": "出庫処理を呼ぶ",
-    "links": [
-      "dg000063"
-    ],
-    "linkType": "static",
-    "timeout": "30"
-  },
-  {
-    "id": "dg00006f",
-    "z": "dg000061",
-    "x": 540,
-    "y": 380,
-    "wires": [
-      [
-        "dg000070"
-      ]
-    ],
-    "type": "function",
-    "name": "HTTPで返す",
-    "func": "msg.statusCode = msg.code;\nmsg.payload = msg.result;\nreturn msg;",
-    "outputs": 1,
-    "timeout": 0,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": []
-  },
-  {
-    "id": "dg000070",
-    "z": "dg000061",
-    "x": 740,
-    "y": 380,
-    "wires": [],
-    "type": "http response",
-    "name": "",
-    "statusCode": "",
-    "headers": {}
-  },
-  {
-    "id": "dg000071",
-    "z": "dg000061",
-    "x": 140,
-    "y": 460,
-    "wires": [],
-    "type": "comment",
-    "name": "MQTT: degimono/checkout を受けて degimono/status に結果を返す",
-    "info": ""
-  },
-  {
-    "id": "dg000072",
+    "id": "dc000077",
     "type": "mqtt-broker",
-    "name": "ラズパイのMosquitto",
+    "name": "ラズパイのMosquitto（完成品）",
     "broker": "localhost",
     "port": "1883",
     "clientid": "",
@@ -1816,13 +2238,30 @@
     "sessionExpiry": ""
   },
   {
-    "id": "dg000073",
-    "z": "dg000061",
-    "x": 140,
-    "y": 520,
+    "id": "dc000078",
+    "z": "dc000075",
+    "x": 120,
+    "y": 140,
     "wires": [
       [
-        "dg000074"
+        "dc00007a"
+      ]
+    ],
+    "type": "http in",
+    "name": "",
+    "url": "/api/checkout",
+    "method": "post",
+    "upload": false,
+    "swaggerDoc": ""
+  },
+  {
+    "id": "dc000079",
+    "z": "dc000075",
+    "x": 120,
+    "y": 200,
+    "wires": [
+      [
+        "dc00007a"
       ]
     ],
     "type": "mqtt in",
@@ -1830,43 +2269,25 @@
     "topic": "degimono/checkout",
     "qos": "0",
     "datatype": "json",
-    "broker": "dg000072",
+    "broker": "dc000077",
     "nl": false,
     "rap": true,
     "rh": 0,
     "inputs": 0
   },
   {
-    "id": "dg000074",
-    "z": "dg000061",
-    "x": 340,
-    "y": 520,
+    "id": "dc00007a",
+    "z": "dc000075",
+    "x": 310,
+    "y": 170,
     "wires": [
       [
-        "dg000075"
-      ]
-    ],
-    "type": "link call",
-    "name": "出庫処理を呼ぶ",
-    "links": [
-      "dg000063"
-    ],
-    "linkType": "static",
-    "timeout": "30"
-  },
-  {
-    "id": "dg000075",
-    "z": "dg000061",
-    "x": 540,
-    "y": 520,
-    "wires": [
-      [
-        "dg000076"
+        "dc00007b"
       ]
     ],
     "type": "function",
-    "name": "MQTTで返す",
-    "func": "msg.topic = \"degimono/status\";\nmsg.payload = msg.result;\nreturn msg;",
+    "name": "出庫の値を読む",
+    "func": "const d = msg.payload;\nmsg.data = {\n    part_id: String(d.part_id || \"\").trim(),\n    quantity: Number(d.quantity) || 0,\n    employee_id: String(d.employee_id || \"\").trim(),\n    user_name: String(d.user_name || \"\").trim(),  // QR には社員名だけが入るので、名前でも探す\n    department: d.department || \"\",\n};\nreturn msg;",
     "outputs": 1,
     "timeout": 0,
     "noerr": 0,
@@ -1875,10 +2296,428 @@
     "libs": []
   },
   {
-    "id": "dg000076",
-    "z": "dg000061",
-    "x": 740,
-    "y": 520,
+    "id": "dc00007b",
+    "z": "dc000075",
+    "x": 500,
+    "y": 170,
+    "wires": [
+      [
+        "dc00007c"
+      ]
+    ],
+    "type": "change",
+    "name": "データを読む",
+    "rules": [
+      {
+        "t": "set",
+        "p": "db",
+        "pt": "msg",
+        "to": "degimono",
+        "tot": "global"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false
+  },
+  {
+    "id": "dc00007c",
+    "z": "dc000075",
+    "x": 690,
+    "y": 170,
+    "wires": [
+      [
+        "dc00007d"
+      ]
+    ],
+    "type": "function",
+    "name": "従業員と部品を探す",
+    "func": "const db = msg.db;\nconst d = msg.data;\n// 社員IDがあれば社員IDで、なければ社員名で探す\nmsg.employee = (d.employee_id ? db.employees.find(e => e.id === d.employee_id)\n    : db.employees.find(e => e.name === d.user_name)) || null;\nmsg.part = db.parts.find(p => p.id === d.part_id) || null;\nreturn msg;",
+    "outputs": 1,
+    "timeout": 0,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": []
+  },
+  {
+    "id": "dc00007d",
+    "z": "dc000075",
+    "x": 880,
+    "y": 170,
+    "wires": [
+      [
+        "dc000083"
+      ],
+      [
+        "dc000084"
+      ],
+      [
+        "dc000085"
+      ],
+      [
+        "dc000086"
+      ],
+      [
+        "dc00007e"
+      ]
+    ],
+    "type": "switch",
+    "name": "出庫できる？",
+    "property": "part",
+    "propertyType": "msg",
+    "rules": [
+      {
+        "t": "jsonata_exp",
+        "v": "data.part_id = \"\" or data.quantity <= 0",
+        "vt": "jsonata"
+      },
+      {
+        "t": "jsonata_exp",
+        "v": "employee = null",
+        "vt": "jsonata"
+      },
+      {
+        "t": "jsonata_exp",
+        "v": "part = null",
+        "vt": "jsonata"
+      },
+      {
+        "t": "jsonata_exp",
+        "v": "part.stock < data.quantity",
+        "vt": "jsonata"
+      },
+      {
+        "t": "else"
+      }
+    ],
+    "checkall": "false",
+    "repair": false,
+    "outputs": 5
+  },
+  {
+    "id": "dc00007e",
+    "z": "dc000075",
+    "x": 1070,
+    "y": 170,
+    "wires": [
+      [
+        "dc00007f"
+      ]
+    ],
+    "type": "function",
+    "name": "在庫を減らす",
+    "func": "msg.part.stock -= msg.data.quantity;\nreturn msg;",
+    "outputs": 1,
+    "timeout": 0,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": []
+  },
+  {
+    "id": "dc00007f",
+    "z": "dc000075",
+    "x": 1260,
+    "y": 170,
+    "wires": [
+      [
+        "dc000080"
+      ]
+    ],
+    "type": "change",
+    "name": "履歴の値",
+    "rules": [
+      {
+        "t": "set",
+        "p": "history",
+        "pt": "msg",
+        "to": "{\n  \"kind\": \"出庫\", \"part_id\": part.id, \"quantity\": data.quantity,\n  \"employee_id\": employee.id, \"department\": data.department\n}",
+        "tot": "jsonata"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false
+  },
+  {
+    "id": "dc000080",
+    "z": "dc000075",
+    "x": 1450,
+    "y": 170,
+    "wires": [
+      [
+        "dc000081"
+      ]
+    ],
+    "type": "link call",
+    "name": "履歴に残す",
+    "links": [
+      "dc000010"
+    ],
+    "linkType": "static",
+    "timeout": "30"
+  },
+  {
+    "id": "dc000081",
+    "z": "dc000075",
+    "x": 1640,
+    "y": 170,
+    "wires": [
+      [
+        "dc000082"
+      ]
+    ],
+    "type": "change",
+    "name": "保存する",
+    "rules": [
+      {
+        "t": "set",
+        "p": "degimono",
+        "pt": "global",
+        "to": "db",
+        "tot": "msg"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false
+  },
+  {
+    "id": "dc000082",
+    "z": "dc000075",
+    "x": 1830,
+    "y": 170,
+    "wires": [
+      [
+        "dc000087",
+        "dc00008c"
+      ]
+    ],
+    "type": "function",
+    "name": "結果を作る",
+    "func": "const p = msg.part;\nconst alert = p.stock <= p.reorder_point;\nmsg.statusCode = 200;\nmsg.payload = {\n    status: \"ok\",\n    message: p.name + \" を \" + msg.data.quantity + \"個 出庫しました\",\n    part_id: p.id, part_name: p.name, stock: p.stock, reorder_point: p.reorder_point,\n    alert,  // true: M5でアラート音とメッセージを出す\n    alert_message: alert ? \"在庫が発注点以下です。発注してください\" : \"\",\n};\nreturn msg;",
+    "outputs": 1,
+    "timeout": 0,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": []
+  },
+  {
+    "id": "dc000083",
+    "z": "dc000075",
+    "x": 1070,
+    "y": 240,
+    "wires": [
+      [
+        "dc000087"
+      ]
+    ],
+    "type": "change",
+    "name": "入力の誤り",
+    "rules": [
+      {
+        "t": "set",
+        "p": "statusCode",
+        "pt": "msg",
+        "to": "400",
+        "tot": "num"
+      },
+      {
+        "t": "set",
+        "p": "payload",
+        "pt": "msg",
+        "to": "{ \"status\": \"error\", \"message\": \"part_id と 1以上の quantity が必要です\" }",
+        "tot": "jsonata"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false
+  },
+  {
+    "id": "dc000084",
+    "z": "dc000075",
+    "x": 1070,
+    "y": 300,
+    "wires": [
+      [
+        "dc000087"
+      ]
+    ],
+    "type": "change",
+    "name": "従業員なし",
+    "rules": [
+      {
+        "t": "set",
+        "p": "statusCode",
+        "pt": "msg",
+        "to": "404",
+        "tot": "num"
+      },
+      {
+        "t": "set",
+        "p": "payload",
+        "pt": "msg",
+        "to": "{ \"status\": \"error\", \"message\": \"従業員が見つかりません\" }",
+        "tot": "jsonata"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false
+  },
+  {
+    "id": "dc000085",
+    "z": "dc000075",
+    "x": 1070,
+    "y": 360,
+    "wires": [
+      [
+        "dc000087"
+      ]
+    ],
+    "type": "change",
+    "name": "部品なし",
+    "rules": [
+      {
+        "t": "set",
+        "p": "statusCode",
+        "pt": "msg",
+        "to": "404",
+        "tot": "num"
+      },
+      {
+        "t": "set",
+        "p": "payload",
+        "pt": "msg",
+        "to": "{ \"status\": \"error\", \"message\": \"部品 \" & data.part_id & \" が見つかりません\" }",
+        "tot": "jsonata"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false
+  },
+  {
+    "id": "dc000086",
+    "z": "dc000075",
+    "x": 1070,
+    "y": 420,
+    "wires": [
+      [
+        "dc000087"
+      ]
+    ],
+    "type": "change",
+    "name": "在庫不足",
+    "rules": [
+      {
+        "t": "set",
+        "p": "statusCode",
+        "pt": "msg",
+        "to": "409",
+        "tot": "num"
+      },
+      {
+        "t": "set",
+        "p": "payload",
+        "pt": "msg",
+        "to": "{ \"status\": \"error\", \"message\": \"在庫不足です（現在庫: \" & part.stock & \", 要求: \" & data.quantity & \"）\" }",
+        "tot": "jsonata"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false
+  },
+  {
+    "id": "dc000087",
+    "z": "dc000075",
+    "x": 2020,
+    "y": 240,
+    "wires": [
+      [
+        "dc000088"
+      ],
+      [
+        "dc000089"
+      ]
+    ],
+    "type": "switch",
+    "name": "返し先は？",
+    "property": "res",
+    "propertyType": "msg",
+    "rules": [
+      {
+        "t": "nnull"
+      },
+      {
+        "t": "else"
+      }
+    ],
+    "checkall": "false",
+    "repair": false,
+    "outputs": 2
+  },
+  {
+    "id": "dc000088",
+    "z": "dc000075",
+    "x": 2210,
+    "y": 220,
+    "wires": [],
+    "type": "http response",
+    "name": "",
+    "statusCode": "",
+    "headers": {}
+  },
+  {
+    "id": "dc000089",
+    "z": "dc000075",
+    "x": 2210,
+    "y": 280,
+    "wires": [
+      [
+        "dc00008a"
+      ]
+    ],
+    "type": "change",
+    "name": "MQTTの宛先",
+    "rules": [
+      {
+        "t": "set",
+        "p": "topic",
+        "pt": "msg",
+        "to": "degimono/status",
+        "tot": "str"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false
+  },
+  {
+    "id": "dc00008a",
+    "z": "dc000075",
+    "x": 2400,
+    "y": 280,
     "wires": [],
     "type": "mqtt out",
     "name": "",
@@ -1890,16 +2729,132 @@
     "userProps": "",
     "correl": "",
     "expiry": "",
-    "broker": "dg000072"
+    "broker": "dc000077"
   },
   {
-    "id": "dg000077",
-    "z": "dg000061",
-    "x": 140,
-    "y": 600,
+    "id": "dc00008b",
+    "z": "dc000075",
+    "x": 1070,
+    "y": 500,
+    "wires": [],
+    "type": "comment",
+    "name": "発注点以下の通知: 出庫後の在庫が発注点以下なら degimono/alert と WebSocket /ws/alert に表示用の文を送る",
+    "info": "text を M5 の画面にそのまま出す（行は \\n で区切る）。\nすでに入荷待ちの発注があるときは「発注してください」ではなく入荷予定日を出す。\nWebSocket はブラウザの M5 ダミー画面（/m5-dummy）用。"
+  },
+  {
+    "id": "dc00008c",
+    "z": "dc000075",
+    "x": 1070,
+    "y": 560,
     "wires": [
       [
-        "dg000078"
+        "dc00008d"
+      ]
+    ],
+    "type": "switch",
+    "name": "発注点以下？",
+    "property": "payload.alert",
+    "propertyType": "msg",
+    "rules": [
+      {
+        "t": "true"
+      }
+    ],
+    "checkall": "false",
+    "repair": false,
+    "outputs": 1
+  },
+  {
+    "id": "dc00008d",
+    "z": "dc000075",
+    "x": 1260,
+    "y": 560,
+    "wires": [
+      [
+        "dc00008e",
+        "dc000091"
+      ]
+    ],
+    "type": "function",
+    "name": "通知文を作る",
+    "func": "const p = msg.part;\nconst waiting = msg.db.orders.filter(o => o.part_id === p.id && o.status === \"入荷待ち\")\n    .sort((a, b) => a.id - b.id)[0];\nconst due = waiting ? waiting.expected_date.slice(5).replace(\"-\", \"/\") : \"\";  // 2026-10-16 → 10/16\n\nmsg.payload = {\n    part_id: p.id,\n    part_name: p.name,\n    stock: p.stock,\n    reorder_point: p.reorder_point,\n    ordered: !!waiting,\n    text: [\n        \"【発注点以下】\",\n        p.name,\n        \"品番 \" + p.id,\n        \"在庫 \" + p.stock + \" / 発注点 \" + p.reorder_point,\n        waiting ? \"発注済み 入荷予定 \" + due : \"発注してください\",\n    ].join(\"\\n\"),\n};\nreturn msg;",
+    "outputs": 1,
+    "timeout": 0,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": []
+  },
+  {
+    "id": "dc00008e",
+    "z": "dc000075",
+    "x": 1450,
+    "y": 560,
+    "wires": [
+      [
+        "dc00008f"
+      ]
+    ],
+    "type": "change",
+    "name": "宛先",
+    "rules": [
+      {
+        "t": "set",
+        "p": "topic",
+        "pt": "msg",
+        "to": "degimono/alert",
+        "tot": "str"
+      }
+    ],
+    "action": "",
+    "property": "",
+    "from": "",
+    "to": "",
+    "reg": false
+  },
+  {
+    "id": "dc00008f",
+    "z": "dc000075",
+    "x": 1640,
+    "y": 560,
+    "wires": [],
+    "type": "mqtt out",
+    "name": "",
+    "topic": "",
+    "qos": "1",
+    "retain": "false",
+    "respTopic": "",
+    "contentType": "",
+    "userProps": "",
+    "correl": "",
+    "expiry": "",
+    "broker": "dc000077"
+  },
+  {
+    "id": "dc000090",
+    "type": "websocket-listener",
+    "path": "/ws/alert",
+    "wholemsg": "false"
+  },
+  {
+    "id": "dc000091",
+    "z": "dc000075",
+    "x": 1450,
+    "y": 620,
+    "wires": [],
+    "type": "websocket out",
+    "name": "ダミー画面へ",
+    "server": "dc000090",
+    "client": ""
+  },
+  {
+    "id": "dc000092",
+    "z": "dc000075",
+    "x": 120,
+    "y": 700,
+    "wires": [
+      [
+        "dc000093"
       ]
     ],
     "type": "catch",
@@ -1908,13 +2863,13 @@
     "uncaught": false
   },
   {
-    "id": "dg000078",
-    "z": "dg000061",
-    "x": 340,
-    "y": 600,
+    "id": "dc000093",
+    "z": "dc000075",
+    "x": 310,
+    "y": 700,
     "wires": [
       [
-        "dg000079"
+        "dc000094"
       ]
     ],
     "type": "function",
@@ -1928,20 +2883,14 @@
     "libs": []
   },
   {
-    "id": "dg000079",
-    "z": "dg000061",
-    "x": 540,
-    "y": 600,
+    "id": "dc000094",
+    "z": "dc000075",
+    "x": 500,
+    "y": 700,
     "wires": [],
     "type": "http response",
     "name": "",
     "statusCode": "",
     "headers": {}
-  },
-  {
-    "id": "dg000001",
-    "type": "sqlitedb",
-    "db": "degimono_nr.db",
-    "mode": "RWC"
   }
 ]

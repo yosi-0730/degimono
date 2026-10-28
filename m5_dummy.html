@@ -57,7 +57,7 @@ function reset(message, c, ms = 4000) { step = 'USER'; data = {}; msg = message 
   if (msg) clearTimer = setTimeout(() => { msg = ''; cls = ''; draw(); }, ms); }
 
 // 発注点以下の通知（実機の degimono/alert と同じ中身）を WebSocket で受ける。
-// つながらないとき（Flask 版など）は、出庫の応答の alert で代わりに表示する
+// つながらないときは、出庫の応答の alert で代わりに表示する
 let wsOk = false;
 function connectAlert() {
   let ws;

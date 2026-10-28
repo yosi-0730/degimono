@@ -1,64 +1,63 @@
-# 在庫管理システム（Node-RED 版）
+# 在庫管理システム（Node-RED）
 
-授業用に、本体（`../app.py`、Flask）と同じ機能を Node-RED のフローで作り直したものです。本体はそのまま残しています。
-入力チェックやエラー処理は最小限にしています。
+在庫管理システムの本体。画面（`../index.html`、`../m5_dummy.html`）と API、MQTT の出庫受付を Node-RED のフローで動かす。データは Node-RED のグローバルコンテキスト `degimono` に持ち、DB は使わない。
+
+ラズパイへの構築・運用は `../docs/ラズパイ運用手順書.md`、自分で作り直すときの方針は `自作用の方針.md` にある。
 
 ## ファイル
 
 | ファイル | 内容 |
 |---|---|
-| `flows.json` | Node-RED に読み込むフロー |
-| `make_flows.js` | `flows.json` を作るスクリプト。画面（`../index.html`、`../m5_dummy.html`）を埋め込む |
-| `flows_screen.json` | 「画面」タブだけのフロー。`make_flows.js` で一緒にできる |
-| `make_flows_context.js` | コンテキスト版（SQLite を使わない）の `flows_context.json` を作るスクリプト |
-| `flows_context.json` | コンテキスト版のフロー。ラズパイで動いているのはこちら |
-| `コンテキスト版の方針.md` | SQLite を使わずコンテキストで作り直すときの方針 |
-| `コンテキスト版の手順.md` | コンテキスト版の動かし方、ラズパイの今の状態、元に戻す方法 |
+| `make_flows.js` | フロー（`flows.json`）を作るスクリプト。画面の HTML を埋め込む。**開発の正はこのファイル** |
+| `flows.json` | できたフロー。ラズパイで動いているもの |
+| `flows_screen.json` | 「画面」タブだけのフロー（自作版を作るときに読み込む） |
+| `deploy.js` | `flows.json` を PC からラズパイの Node-RED に入れるスクリプト |
+| `自作用の方針.md` | 同じものを自分で作るときの方針と API の仕様 |
 
-以下は SQLite 版の説明。ラズパイでは今はコンテキスト版を動かしていて、SQLite のノードは外してある。
+## 直して入れる
 
-## 動かし方
+```bash
+node make_flows.js     # flows.json と flows_screen.json を作る
+node deploy.js         # ラズパイ（既定 192.168.50.2）に入れる
+```
 
-1. Node-RED を入れる。ラズパイなら公式のスクリプトで入ります。
-   ```bash
-   bash <(curl -sL https://github.com/node-red/linux-installers/releases/latest/download/update-nodejs-and-nodered-deb)
-   sudo systemctl enable --now nodered
-   ```
-2. ブラウザで `http://<ホスト>:1880/` を開き、エディタの右上メニュー →「パレットの管理」→「ノードを追加」で **`node-red-node-sqlite`** を入れる。
-3. 右上メニュー →「読み込み」で `flows.json` を選び、「デプロイ」を押す。
-4. 画面を開く。
+`deploy.js` は ID が `dc` で始まるノードだけを入れ替えるので、エディタで作ったほかのタブは残る。エディタで完成品のタブを直しても、次に入れ直すと上書きされる。
+
+## URL
 
 | URL | 内容 |
 |---|---|
-| `http://<ホスト>:1880/app` | 入出庫管理・発注管理の画面（本体の `/` と同じ） |
-| `http://<ホスト>:1880/m5-dummy` | M5StickC のダミー画面 |
+| `http://<ホスト>:1880/` | Node-RED のエディタ |
+| `http://<ホスト>:1880/app` | 入出庫管理・発注管理の画面 |
+| `http://<ホスト>:1880/m5-dummy` | M5StickC のダミー画面（QR 読み取り → 出庫） |
 | `http://<ホスト>:1880/download/history.csv` | 入出庫履歴 CSV |
 
-`http://<ホスト>:1880/` は Node-RED のエディタなので、画面は `/app` に置いています。
+API の一覧と受け取るもの・返すものは `自作用の方針.md` の「API」にある。
 
-## フローの中身
+## タブ
 
 | タブ | 内容 |
 |---|---|
-| 画面 | `http in` → `template`（HTML）→ `http response` |
-| DB準備 | 起動時にテーブルを作り、部品が0件ならデモデータ（従業員・部品・入荷待ち3件）を入れる |
-| 参照API | 従業員・部品・発注一覧・履歴・CSV（GET） |
-| 登録API | 部品登録・発注結果・入庫（POST） |
-| 出庫 | 出庫処理を1か所にまとめ、HTTP（`/api/checkout`）と MQTT（`degimono/checkout` → `degimono/status`）の両方から `link call` で呼ぶ |
+| 画面（完成品） | `http in` → `template`（HTML）→ `http response` |
+| 共通処理（完成品） | 「部品に状態を付ける」「履歴に残す」「履歴一覧を作る」。ほかのタブから link call で呼ぶ |
+| データ準備（完成品） | 起動時にデータがなければデモデータを入れる。「デモデータに戻す」ボタン |
+| 参照API（完成品） | 従業員・保管場所・部品・発注一覧・履歴・CSV（GET） |
+| 登録API（完成品） | 部品登録・発注・入庫（POST） |
+| 出庫（完成品） | HTTP（`/api/checkout`）と MQTT（`degimono/checkout`）の出庫を同じ流れで処理し、返し先を分ける。発注点以下なら `degimono/alert`（MQTT）と `/ws/alert`（WebSocket、ダミー画面用）に通知を送る |
 
-SQL は SQLite ノードの中に書き、値は手前の function ノードで `msg.params` に入れて渡しています。
+## ノードの分け方
 
-## 本体との違い
+- コンテキストの読み書きは change ノード（「データを読む」で `msg.db` に出し、「保存する」で戻す）
+- 何度も使う処理は「共通処理」タブに置き、link call で呼ぶ
+- 分岐は switch ノード、決まった形の値やエラーの応答は change ノード（JSONata）
+- function ノードは「部品を探す」「在庫を減らす」のように、一言で言える仕事だけをする
 
-- DB は本体とは別のファイル `degimono_nr.db` です。Node-RED を起動したフォルダにできます。場所を決めたいときは、SQLite ノードの設定（`degimono_nr.db`）を絶対パスに書き換えます。
-- 入力チェックはほとんどしていません。品番の重複など SQL のエラーは、各タブの `catch` ノードで 500 として返します。
-- 出庫で従業員IDが見つからないときは、在庫は減りますが履歴に残りません。
-- MQTT の接続先は `localhost:1883` です。**本体（Flask）と同時に動かすと、M5 からの出庫を両方が受け取ります。** 同時に動かすときは、どちらかの MQTT を止めてください（本体は `MQTT_ENABLED=0`）。
+## MQTT
 
-## 画面を直したとき
+| トピック | 向き | 中身 |
+|---|---|---|
+| `degimono/checkout` | M5 → Node-RED | 出庫。`{part_id, quantity, user_name（または employee_id）, department}` |
+| `degimono/status` | Node-RED → M5 | 出庫の結果 |
+| `degimono/alert` | Node-RED → M5 | 発注点以下の通知。`text` を M5 の画面にそのまま出す |
 
-`../index.html` などを直したら、このフォルダで次を実行し、できた `flows.json` を読み込み直します。
-
-```bash
-node make_flows.js
-```
+ブローカーは `localhost:1883`（ラズパイの Docker の Mosquitto）。
